@@ -24,24 +24,24 @@ const MatrixThree = () => {
         return clauses.map((clause) => (
             <React.Fragment key={clause._id}>
                 <tr>
-                    <td className={`p-2 ${level === 0 ? 'font-bold border' : 'border'}`} style={{ paddingLeft: `${level * 5}px` }}>
+                    <td className={`p-2 w-[400px] ${level === 0 ? 'font-bold border' : 'border'}`}>
                         {clause.name}
                     </td>
                     {level === 0 
                     ?
                     <>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    
+                    <td className="w-[150px] border"></td>
+                    <td className="w-[150px] border"></td>
+                    <td className="w-[150px] border"></td>
+                    <td className="w-[150px] border"></td>
+                    <td className="w-[150px] border"></td>
+
                     </>
                     :
                     <>
                     {isos.map(iso =>{
                         return (
-                            <td className={`border p-2 ${matrixCombination[`${clause._id}-${iso._id}`] ? 'bg-green-400': 'bg-red-500'}`}>
+                            <td className={`w-[150px] border p-2 ${matrixCombination[`${clause._id}-${iso._id}`] ? 'bg-green-400': 'bg-red-500'}`}>
                                 {/* {`${clause.name.substring(0,3)}-${iso.name}`}  */}
                                 {
                                     matrixCombination[`${clause._id}-${iso._id}`]
@@ -68,21 +68,19 @@ const MatrixThree = () => {
         ));
     };
 
-
     return (
         <>
-            <table className="table-auto border-collapse border">
-                <thead className="bg-slate-300">
+            <table className="">
+                <thead className="bg-slate-300 block">
                     <tr>
-                        <th className="border p-2"></th>
-                        
+                        <th className="border p-2 w-[400px]"></th>                        
                         {isos.map(iso => (
-                            <th key={iso._id} className="border p-2">{iso.name}</th>
+                            <th key={iso._id} className="w-[150px] border p-2">{iso.name}</th>
                         ))}
                     </tr>
                 </thead>
-                <tbody>
-                    {renderClauseRows(clauses)}
+                <tbody className="block h-[400px] overflow-y-auto overflow-x-hidden">                    
+                        {renderClauseRows(clauses)}                    
                 </tbody>
             </table>            
         </>
