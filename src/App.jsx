@@ -1,0 +1,56 @@
+import {Routes, Route} from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async';
+
+import Navbar from './components/Navbar'
+import PasswordGenerator from './pages/PasswordGenerator'
+import CurrencyConvertor from './pages/CurrencyConvertor'
+import Home from './pages/Home'
+import SignUp from './pages/SignUp'
+import Data from './pages/Data'
+import MultiDropdown from './pages/MultiDropdown'
+import SingleDropdown from './pages/SingleDropdown'
+import SignIn from './pages/SignIn'
+import ExcelUpload from './pages/ExcelUpload'
+import HookForm from './pages/HookForm'
+import DragAndDrop from './pages/DragAndDrop';
+import Editor from './pages/Editor';
+import { Practice } from './components/Practice';
+import  Matrix  from './pages/Matrix';
+import MatrixTwo from './pages/MatrixTwo';
+import MatrixThree from './pages/MatrixThree';
+
+
+
+function App() {
+  
+
+  return (
+    <div>
+      <Navbar/>
+      <div className='mx-2 md:mx-10 py-10'>
+        <HelmetProvider>
+        <Routes>
+          <Route path='/' element={<PasswordGenerator/>} />
+          <Route path='/home' element={<Home/>}/>
+          <Route path='/convertor' element={<CurrencyConvertor/>}/>
+          <Route path='/signUp' element={<SignUp/>}/>
+          <Route path='/data' element={<Data/>}/>
+          <Route path='/multi-select' element={<MultiDropdown/>}/>
+          <Route path='/single-select' element={<SingleDropdown/>}/>
+          <Route path='/signIn' element={<SignIn/>}/>
+          <Route path='/excel-upload' element={<ExcelUpload/>}/>
+          <Route path='/hook-form' element={<HookForm/>}/>
+          <Route path='/drag-drop' element={<DragAndDrop/>}/>
+          <Route path='/ck-editor' element={<Editor/>}/>
+          <Route path='/practice' element={<Practice/>}/>
+          <Route path='/matrix' element={<Matrix/>}/>
+          <Route path='/matrix-two' element={<MatrixTwo/>} />
+          <Route path='/matrix-three' element={<MatrixThree/>} />
+        </Routes>
+        </HelmetProvider>
+      </div>
+    </div>
+  )
+}
+
+export default App
