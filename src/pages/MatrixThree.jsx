@@ -49,7 +49,7 @@ const MatrixThree = () => {
         return clauses.map((clause) => (
             <React.Fragment key={clause._id}>
                 <tr>
-                    <td className={`p-2 w-[250px] ${level === 0 ? 'font-bold border' : 'border'}`}>
+                    <td className={`p-2 w-[250px] ${level === 0 ? 'font-bold border' : 'border'}`} style={{paddingLeft: `${level*10}px`}}>
                         {clause.name}
                     </td>
                     {level === 0 ? (
