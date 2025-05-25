@@ -42,13 +42,39 @@ const CheckboxCell = ({ checked, onChange }) => (
 //     ));
 // };
 
+// const renderTreeRows = (nodes, level = 0, toMasterList, selected, toggleMapping) => {
+//     return nodes.map(node => (
+//         <React.Fragment key={node._id}>
+//             <tr>
+//                 <td
+//                     className="border p-2 sticky left-0 bg-white z-10"
+//                     style={{ paddingLeft: `${level * 20}px` }}
+//                 >
+//                     {node.name}
+//                 </td>
+//                 {toMasterList.map(to => (
+//                     <td key={to._id} className="text-center border p-2">
+//                         <input
+//                             type="checkbox"
+//                             checked={selected[`${node._id}_${to._id}`] || false}
+//                             onChange={() => toggleMapping(node._id, to._id)}
+//                         />
+//                     </td>
+//                 ))}
+//             </tr>
+//             {node.children?.length > 0 &&
+//                 renderTreeRows(node.children, level + 1, toMasterList, selected, toggleMapping)}
+//         </React.Fragment>
+//     ));
+// };
+
 const renderTreeRows = (nodes, level = 0, toMasterList, selected, toggleMapping) => {
     return nodes.map(node => (
         <React.Fragment key={node._id}>
             <tr>
                 <td
                     className="border p-2 sticky left-0 bg-white z-10"
-                    style={{ paddingLeft: `${level * 20}px` }}
+                    style={{ paddingLeft: `${level * 20}px`, minWidth: '250px' }}
                 >
                     {node.name}
                 </td>
@@ -186,23 +212,62 @@ const Mapping = () => {
                 fromType &&
                 toType &&
                 (
-                    <div className="mt-5">
-                        <div className="overflow-x-auto ">
+                    // <div className="mt-5">
+                    //     <div className="overflow-x-auto ">
+                    //         <div className="max-h-[480px] overflow-y-auto">
+                    //             <table className="border-collapse border w-full min-w-max">
+                    //                 <thead>
+                    //                     <tr className="bg-gray-200">
+                    //                         <th className="border p-2 text-left sticky left-0 bg-gray-200 z-10">
+                    //                             {fromType}
+                    //                         </th>
+                    //                         {toList.map(to => (
+                    //                             <th
+                    //                                 key={to._id}
+                    //                                 className="sticky border p-2 text-center break-words align-top"
+                    //                                 style={{
+                    //                                     paddingLeft: `${to.level * 20}px`,
+                    //                                     maxWidth: '120px', // adjust as needed
+                    //                                     minWidth: '80px',
+                    //                                     wordWrap: 'break-word'
+                    //                                 }}
+                    //                             >
+                    //                                 {to.name}
+                    //                             </th>
+                    //                         ))}
+                    //                     </tr>
+                    //                 </thead>
+                    //                 <tbody>
+                    //                     {renderTreeRows(fromTree, 0, toList, selected, toggleMapping)}
+                    //                 </tbody>
+                    //             </table>
+                    //         </div>
+                    //     </div>
+
+                    //     <button
+                    //         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+                    //     onClick={handleSubmit}
+                    //     >
+                    //         Save Mapping
+                    //     </button>
+                    // </div>
+                    <div className="mt-5 overflow-x-auto">
+                        <div className="max-h-[480px] overflow-y-auto relative">
                             <table className="border-collapse border w-full min-w-max">
-                                <thead>
-                                    <tr className="bg-gray-200">
-                                        <th className="border p-2 text-left sticky left-0 bg-gray-200 z-10">
+                                <thead className="bg-gray-200">
+                                    <tr>
+                                        <th className="border p-2 text-left sticky top-0 left-0 z-30 bg-gray-200">
                                             {fromType}
                                         </th>
                                         {toList.map(to => (
                                             <th
                                                 key={to._id}
-                                                className="border p-2 text-center break-words align-top"
+                                                className="border p-2 text-center sticky top-0 bg-gray-200 z-20"
                                                 style={{
                                                     paddingLeft: `${to.level * 20}px`,
-                                                    maxWidth: '120px', // adjust as needed
-                                                    minWidth: '80px',
-                                                    wordWrap: 'break-word'
+                                                    minWidth: '100px',
+                                                    maxWidth: '150px',
+                                                    wordWrap: 'break-word',
                                                 }}
                                             >
                                                 {to.name}
@@ -218,11 +283,13 @@ const Mapping = () => {
 
                         <button
                             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-                        onClick={handleSubmit}
+                            onClick={handleSubmit}
                         >
                             Save Mapping
                         </button>
                     </div>
+
+
 
                 )
             }
