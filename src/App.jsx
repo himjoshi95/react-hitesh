@@ -18,6 +18,9 @@ import { Practice } from './components/Practice';
 import  Matrix  from './pages/Matrix';
 import MatrixTwo from './pages/MatrixTwo';
 import MatrixThree from './pages/MatrixThree';
+import MatrixFour from './pages/MatrixFour';
+import Master from './pages/Master';
+import Mapping from './pages/Mapping';
 
 
 
@@ -46,6 +49,9 @@ function App() {
           <Route path='/matrix' element={<Matrix/>}/>
           <Route path='/matrix-two' element={<MatrixTwo/>} />
           <Route path='/matrix-three' element={<MatrixThree/>} />
+          <Route path='/matrix-four' element={<MatrixFour/>} />
+          <Route path='/master' element={<Master/>} />
+          <Route path='/mapping' element={<Mapping/>}/>
         </Routes>
         </HelmetProvider>
       </div>
