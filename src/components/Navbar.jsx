@@ -10,15 +10,15 @@ const Navbar = () =>{
                     <h1 className="text-xl font-bold"><i>Trainings</i></h1>
                 </div>
                 <div>
-                    <ul className="hidden md:flex md:gap-3">
-                        <li><NavLink to='/' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'} `}>Generator</NavLink></li>
+                    <ul className="hidden md:flex md:gap-5">
+                        <li><NavLink to='/master' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'} `}>Master Data</NavLink></li>
                         {/* <li><NavLink to='/convertor' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Convertor</NavLink></li> */}
-                        <li><NavLink to='/multi-select' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Dropdowns(M)</NavLink></li>
-                        <li><NavLink to='/single-select' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Dropdowns(S)</NavLink></li>
+                        <li><NavLink to='/mapping' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Mapping</NavLink></li>
+                        <li><NavLink to='/matrix-four' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Matrix</NavLink></li>
                         {/* <li><NavLink to='/home' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Home</NavLink></li> */}
                         {/* <li><NavLink to='/signUp' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Sign-up</NavLink></li> */}
-                        <li><NavLink to='/data' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Data chart</NavLink></li>
-                        <li><NavLink to='/signIn' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold' : 'text-white'}`}>Sign In</NavLink></li>
+                        {/* <li><NavLink to='/data' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Data chart</NavLink></li> */}
+                        {/* <li><NavLink to='/signIn' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold' : 'text-white'}`}>Sign In</NavLink></li> */}
                     </ul>
                 </div>
                 <div className="hidden md:flex md:justify-end ">                    

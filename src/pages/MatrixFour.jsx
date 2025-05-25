@@ -121,7 +121,7 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, level=0 }) => {
   return clauseNodes.map((clauseNode) => (
     <React.Fragment key={clauseNode.clause._id}>
       <tr className="bg-gray-100 font-semibold">
-        <td colSpan={isoList.length + 2} style={{paddingLeft: `${level*16}px`}}>{clauseNode.clause.name}</td>
+        <td colSpan={isoList.length + 2} style={{paddingLeft: `${level*16}px`}}>{clauseNode.clause.name !== 'Clause Master' && clauseNode.clause.name }</td>
       </tr>
 
       {clauseNode.questions.map((q) => (
