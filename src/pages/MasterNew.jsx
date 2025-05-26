@@ -80,6 +80,7 @@ const MasterNew = () => {
             <div key={clauseNode.clause._id} className="ml-1 mt-2 border border-blue-500 rounded mb-1 p-2 shadow-xl">
                 <div className="flex gap-1 items-center" style={{ paddingLeft: `${level * 16}px` }}>
                     <Dot sixe={30}/>
+                    <label>{clauseNode.clause.number ? clauseNode.clause.number: "" }</label>
                     <label>{clauseNode.clause.name}</label>
                     <span 
                         className="border h-6 w-6 p-1 border-slate-500 rounded-full flex justify-center items-center hover:cursor-pointer"

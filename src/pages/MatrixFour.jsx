@@ -138,7 +138,8 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, r
                     style={{ paddingLeft: `${level * 16}px` }}
                 >
                     <div className="font-semibold pb-2">
-                        {clauseNode.clause.name !== 'Clause Master' && clauseNode.clause.name}
+                        
+                        {clauseNode.clause.name !== 'Clause Master' && (`${clauseNode?.clause?.number ?? ""} ${clauseNode.clause.name}`)}
                     </div>
                     {
                         clauseNode.clause.name !== 'Clause Master'
