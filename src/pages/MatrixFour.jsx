@@ -101,7 +101,7 @@ const matrix = {
     '6.1.3': ['iso1', 'iso2', 'iso3', 'iso4'],
     '6.2': ['iso1', 'iso2', 'iso3', 'iso4'],
 
-    a3: ['iso1', 'iso2', 'iso3', 'iso4']
+    
   }
 }
 
@@ -114,7 +114,7 @@ const Dropdown = ({ value,onChange }) => (
   </select>
 );
 
-const MatrixRows = ({ clauseNodes, isoList, isoMap, level = 0,responses,setResponses,remarks,setRemarks }) => {
+const MatrixRows = ({ clauseNodes, isoList, isoMap,questionIsoMap, level = 0,responses,setResponses,remarks,setRemarks }) => {
   const updateResponse = (clauseId,questionId,isoId,field,value) => {
     const key = `${questionId}_${isoId}`;
     setResponses(prev => ({
@@ -154,7 +154,8 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, level = 0,responses,setRespo
         <tr key={q._id}>
           <td className="sticky left-0 bg-white z-10 border border-slate-700 w-[400px] py-1" style={{ paddingLeft: `${level * 40}px` }}>{q.name} </td>
           {isoList.map((iso) => {
-            const isMapped = isoMap[clauseNode.clause._id]?.includes(iso._id);
+            // const isMapped = isoMap[clauseNode.clause._id]?.includes(iso._id);
+            const isMapped = questionIsoMap[q._id]?.includes(iso._id);
             const key = `${q._id}_${iso._id}`;
             return (
               <td key={iso._id} className={`text-center border border-slate-700 ${isMapped ? 'bg-green-400' : 'bg-red-400'}`}>
@@ -192,6 +193,7 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, level = 0,responses,setRespo
           clauseNodes={clauseNode.children}
           isoList={isoList}
           isoMap={isoMap}
+          questionIsoMap={questionIsoMap}
           level={level + 1}
           responses={responses}
           setResponses={setResponses}
@@ -268,6 +270,7 @@ const MatrixFour = () => {
                     clauseNodes={matrix?.yAxis || []}
                     isoList={matrix?.xAxis || []}
                     isoMap={matrix?.isoMap || []}
+                    questionIsoMap={matrix?.questionIsoMap || []}
                     responses={responses}
                     setResponses={setResponses}
                     remarks={remarks}
