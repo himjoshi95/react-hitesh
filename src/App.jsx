@@ -21,6 +21,7 @@ import MatrixThree from './pages/MatrixThree';
 import MatrixFour from './pages/MatrixFour';
 import Master from './pages/Master';
 import Mapping from './pages/Mapping';
+import MasterNew from './pages/MasterNew';
 
 
 
@@ -52,6 +53,7 @@ function App() {
           <Route path='/matrix-four' element={<MatrixFour/>} />
           <Route path='/master' element={<Master/>} />
           <Route path='/mapping' element={<Mapping/>}/>
+          <Route path='/master-new' element={<MasterNew/>}/>
         </Routes>
         </HelmetProvider>
       </div>

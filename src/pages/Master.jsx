@@ -96,18 +96,30 @@ const Master = () => {
     const renderNestedHierarchy = (data) => {
         return data?.map((item) => (
             <div key={item._id} className="ml-1 mt-2 border border-blue-500 rounded mb-1 shadow-xl">
-                <div className="flex items-center">
+                <div className="flex gap-2 items-center">
                     <Dot size={30}/>
                     <label className="pr-2">{item.name}</label>
-                    <span className="border h-5 w-5 p-1 border-slate-500 rounded-full flex justify-center items-center">
+                    <span className="border h-6 w-6 p-1 border-slate-500 rounded-full flex justify-center items-center">
                         <span 
-                            className="font-semibold text-lg hover:cursor-pointer"
+                            className="font-semibold hover:cursor-pointer"
                             onClick={()=>{
                                 setAddMasterId(item._id);
                                 setAddMasterModel(true);
                             }}
                             >
                             +
+                        </span>
+                    </span>
+                    <span className="border h-6 w-6 p-1 border-slate-500 rounded-full flex justify-center items-center">
+                        <span 
+                            className="font-semibold text-sm hover:cursor-pointer"
+                            onClick={()=>{
+                                setAddMasterId(item._id);
+                                setAddMasterModel(true);
+                            }}
+                            >
+                            <span>Q</span>
+                            <span>+</span>
                         </span>
                     </span>
                 </div>
@@ -176,7 +188,19 @@ const Master = () => {
                                     +
                                 </span>
                             </span>
-                            {/* <span>{addMasterId}</span> */}
+                            {/* <span className="border h-6 w-6 p-1 border-slate-500 rounded-full flex justify-center items-center">
+                                <span 
+                                    className="font-semibold hover:cursor-pointer"
+                                    onClick={()=>{
+                                        setAddMasterId(master._id);
+                                        setAddMasterModel(true);
+                                    }}
+                                >
+                                    <span>Q</span>
+                                    <span>+</span>                                     
+                                </span>
+                            </span> */}
+                            <span>{master._id}</span>
                         </div>
                     ))}
                 </div>

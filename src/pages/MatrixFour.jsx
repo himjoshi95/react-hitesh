@@ -105,22 +105,49 @@ const matrix = {
   }
 }
 
-const Dropdown = ({ value }) => (
-  <select defaultValue={value}>
-    {/* <option value={value}>{value}</option> */}
+const Dropdown = ({ value,onChange }) => (
+  <select value={value} onChange={onChange}>    
     <option value="">Select</option>
-    <option>Yes</option>
-    <option>No</option>
-    <option>Partial</option>
-    {/* Add more options here if needed */}
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+    <option value="Partial">Partial</option>    
   </select>
 );
 
-const MatrixRows = ({ clauseNodes, isoList, isoMap, level = 0 }) => {
+const MatrixRows = ({ clauseNodes, isoList, isoMap, level = 0,responses,setResponses,remarks,setRemarks }) => {
+  const updateResponse = (clauseId,questionId,isoId,field,value) => {
+    const key = `${questionId}_${isoId}`;
+    setResponses(prev => ({
+      ...prev,
+      [key] : {
+        ...(prev[key] || {}),
+        clauseId,
+        questionId,
+        isoId,
+        [field]:value
+      },
+    }));
+  };
+  
   return clauseNodes.map((clauseNode) => (
     <React.Fragment key={clauseNode.clause._id}>
-      <tr className="bg-gray-100 font-semibold">
-        <td colSpan={isoList.length + 2} style={{ paddingLeft: `${level * 16}px` }}>{clauseNode.clause.name !== 'Clause Master' && clauseNode.clause.name}</td>
+      <tr className="bg-gray-100">
+        <td 
+          className="flex gap-2"
+          colSpan={isoList.length + 2} 
+          style={{ paddingLeft: `${level * 16}px` }}
+        >
+          <div className="font-semibold">
+            {clauseNode.clause.name !== 'Clause Master' && clauseNode.clause.name}
+          </div>
+          {
+            clauseNode.clause.name !== 'Clause Master'
+            &&
+            <div>
+              <span className="text-[10px]">Add Question</span>
+            </div>
+          }
+        </td>
       </tr>
 
       {clauseNode.questions.map((q) => (
@@ -128,9 +155,18 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, level = 0 }) => {
           <td className="sticky left-0 bg-white z-10 border border-slate-700 w-[400px] py-1" style={{ paddingLeft: `${level * 40}px` }}>{q.name} </td>
           {isoList.map((iso) => {
             const isMapped = isoMap[clauseNode.clause._id]?.includes(iso._id);
+            const key = `${q._id}_${iso._id}`;
             return (
               <td key={iso._id} className={`text-center border border-slate-700 ${isMapped ? 'bg-green-400' : 'bg-red-400'}`}>
-                {isMapped ? <Dropdown value={""} /> : null}
+                {isMapped 
+                ? 
+                <Dropdown 
+                  value={responses[key]?.response || ""} 
+                  onChange={(e) => updateResponse(clauseNode.clause._id, q._id, iso._id, 'response', e.target.value)}  
+                /> 
+                : 
+                null
+                }                
               </td>
             );
           })}
@@ -139,6 +175,13 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, level = 0 }) => {
               type="text"
               placeholder="Add remarks"
               className="w-full p-1 border border-gray-300"
+              value={remarks[q._id] || ""}
+              onChange={(e) => setRemarks(prev => ({...prev, [q._id]: e.target.value}))}
+              // onChange={(e) => {
+              //   const isoId = isoList.find(iso => isoMap[clauseNode.clause._id]?.includes(iso._id))?._id;
+              //   if (isoId) updateResponse(clauseNode.clause._id, q._id, isoId, 'remark', e.target.value);
+              // }}
+
             />
           </td>
         </tr>
@@ -150,88 +193,102 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, level = 0 }) => {
           isoList={isoList}
           isoMap={isoMap}
           level={level + 1}
+          responses={responses}
+          setResponses={setResponses}
+          remarks={remarks}
+          setRemarks={setRemarks}
         />
       )}
     </React.Fragment>
   ));
 };
 
+const API_URL = 'http://localhost:3009';
 const MatrixFour = () => {
 
   const [matrix, setMatrix] = useState([]);
+  const [responses, setResponses] = useState({});
+  const [remarks, setRemarks ] = useState({});
 
   const fetchData = async () => {
-    const response = await fetch(`http://localhost:3009/get-matrix-data`)
+    const response = await fetch(`${API_URL}/get-matrix-data`)
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     setMatrix(data);
   };
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  return (
-    // <div className="max-w-full overflow-x-auto mb-10">
-    //   <div className="max-h-[480px] overflow-y-auto">
-    //     <table className="min-w-full border border-collapse border-slate-700">
-    //       <thead className="bg-blue-100">
-    //         <tr>
-    //           <th className="border border-slate-700 p-2 text-left">Clause / Question</th>
-    //           {matrix?.xAxis?.map((iso) => (
-    //             <th key={iso._id} className="border border-slate-700 p-2 text-center">
-    //               {iso.name}
-    //             </th>
-    //           ))}
-    //           <th className="w-[300px] border border-slate-700 p-2 text-left">Remarks</th>
-    //         </tr>
-    //       </thead>
-    //       <tbody>
-    //         {
-    //           (
-    //             <MatrixRows
-    //               clauseNodes={matrix?.yAxis || []}
-    //               isoList={matrix?.xAxis || []}
-    //               isoMap={matrix?.isoMap || []}
-    //             />
-    //           )
-    //         }
-    //       </tbody>
-    //     </table>
-    //   </div>
-    // </div>
-    <div className="max-w-full overflow-x-auto mb-10">
-  {/* HEADER TABLE */}
-  <table className="min-w-full table-fixed border-collapse border border-slate-700">
-    <thead className="bg-blue-100">
-      <tr>
-        <th className="sticky top-0 left-0 z-30 bg-blue-100 border border-slate-700 p-2 text-left w-[400px]">
-          Clause / Question
-        </th>
-        {matrix?.xAxis?.map((iso) => (
-          <th key={iso._id} className="sticky top-0 z-20 bg-blue-100 border border-slate-700 p-2 text-center">
-            {iso.name}
-          </th>
-        ))}
-        <th className="sticky top-0 z-20 bg-blue-100 border border-slate-700 p-2 text-left w-[300px]">
-          Remarks
-        </th>
-      </tr>
-    </thead>
-  </table>
+  const handleSubmit = async () => {
+    const payload = Object.values(responses).map(r => {
+      const remark = remarks[r.questionId] || "";
+      return {
+        ...r,
+        remark
+      } 
+    });
+    // console.log(payload);
+    const res = await fetch(`${API_URL}/save-matrix`,{
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({responses: payload})
+    });
+    const data = await res.json();
+    alert(data.message);
+  }
 
-  {/* BODY SCROLLS ONLY Y */}
-  <div className="max-h-[480px] overflow-y-auto">
-    <table className="min-w-full table-fixed border-collapse border border-slate-700">
-      <tbody>
-        <MatrixRows
-          clauseNodes={matrix?.yAxis || []}
-          isoList={matrix?.xAxis || []}
-          isoMap={matrix?.isoMap || []}
-        />
-      </tbody>
-    </table>
-  </div>
-</div>
+  return (
+    <div>
+      {/* <div className="mb-10">
+        {JSON.stringify(responses)}
+      </div>
+      <div>
+        {JSON.stringify(remarks)}
+      </div> */}
+      <div className="max-w-full overflow-x-auto mb-10">
+        <div className="max-h-[480px] overflow-y-auto">
+          <table className="min-w-full border border-collapse border-slate-700">
+            <thead className="bg-blue-100">
+              <tr>
+                <th className="border border-slate-700 p-2 text-left">Clause / Question</th>
+                {matrix?.xAxis?.map((iso) => (
+                  <th key={iso._id} className="border border-slate-700 p-2 text-center">
+                    {iso.name}
+                  </th>
+                ))}
+                <th className="w-[300px] border border-slate-700 p-2 text-left">Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                (
+                  <MatrixRows
+                    clauseNodes={matrix?.yAxis || []}
+                    isoList={matrix?.xAxis || []}
+                    isoMap={matrix?.isoMap || []}
+                    responses={responses}
+                    setResponses={setResponses}
+                    remarks={remarks}
+                    setRemarks={setRemarks}
+                  />
+                )
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+          <button 
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+            onClick={handleSubmit}
+          >
+            Save
+          </button>
+      </div>
+    </div>
 
   )
 }
