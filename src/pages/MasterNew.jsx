@@ -149,7 +149,7 @@ const MasterNew = () => {
     };
 
     const handleAddQuestionMaster = async(id) =>{
-        const response = await fetch(`${API_URL}/add-question-clause`,{
+        const response = await fetch(`${API_URL}/add-question-clause-main`,{
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

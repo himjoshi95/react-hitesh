@@ -301,11 +301,23 @@ const MatrixFour = () => {
 
 
     const handleAddNewQuestion = async (clauseID) => {
-        const id = questionIdCounter.current++;
-        addQuestionToClause(clauseID, {
-            _id: `q${id}`,
-            name: questionName
-        }, isoForClause);
+        // const id = questionIdCounter.current++;
+        // addQuestionToClause(clauseID, {
+        //     _id: `q${id}`,
+        //     name: questionName
+        // }, isoForClause);
+        // setQuestionMasterModel(false);
+        const response = await fetch(`${API_URL}/add-question-clause`,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: questionName,
+                masterId:clauseID,
+                isoQuestion: isoForClause?.[clauseID]
+            })            
+        })
         setQuestionMasterModel(false);
     };
 
@@ -384,7 +396,10 @@ const MatrixFour = () => {
                             </span>
                         </div>
                         <div className="mt-5 flex flex-col gap-5">
-                            <span className="text-lg font-semibold">Question Name {clauseID}</span>
+                            <span className="text-lg font-semibold">
+                                Question Name 
+                                {/* {clauseID} */}
+                            </span>
                             <input
                                 type="text"
                                 className="border border-slate-500 rounded p-1 px-2 focus:outline-none"
@@ -433,7 +448,8 @@ const MatrixFour = () => {
                                 className="border border-slate-500"
                                 onClick={() => handleAddNewQuestion(clauseID)}
                             >
-                                Add
+                                Add 
+                                {/* {clauseID} */}
                             </button>
 
                         </div>
