@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const matrix = {
     yAxis: [
@@ -114,7 +114,7 @@ const Dropdown = ({ value, onChange }) => (
     </select>
 );
 
-const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, responses, setResponses, remarks, setRemarks, setClauseID, setQuestionMasterModel, setIsos,setIsoForClause }) => {
+const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, responses, setResponses, remarks, setRemarks, setClauseID, setQuestionMasterModel, setIsos, setIsoForClause }) => {
     const updateResponse = (clauseId, questionId, isoId, field, value) => {
         const key = `${questionId}_${isoId}`;
         setResponses(prev => ({
@@ -138,7 +138,7 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, r
                     style={{ paddingLeft: `${level * 16}px` }}
                 >
                     <div className="font-semibold pb-2">
-                        
+
                         {clauseNode.clause.name !== 'Clause Master' && (`${clauseNode?.clause?.number ?? ""} ${clauseNode.clause.name}`)}
                     </div>
                     {
@@ -231,12 +231,18 @@ const MatrixFour = () => {
     const [questionName, setQuestionName] = useState('');
     const [isos, setIsos] = useState([]);
     const [isoForClause, setIsoForClause] = useState({});
-    const questionIdCounter = useRef(1);
+    const [isoTypeMaster, setIsoTypeMaster] = useState([]);
+    const [selectIsoType, setSelectIsoType] = useState(null);
 
+    const fetchISOTypeMaster = async () => {
+        const response = await fetch(`${API_URL}/get-isotype-master`)
+        const data = await response.json();
+        setIsoTypeMaster(data.isoTypeMasterdata)
+    }
 
 
     const fetchData = async () => {
-        const response = await fetch(`${API_URL}/get-matrix-data`)
+        const response = await fetch(`${API_URL}/get-matrix-data?isoTypeMaster=${selectIsoType}`)
         const data = await response.json();
         // console.log(data);
         setIsoForClause(data.isoMap);
@@ -244,8 +250,11 @@ const MatrixFour = () => {
     };
 
     useEffect(() => {
-        fetchData();
-    }, []);    
+        if(selectIsoType){
+            fetchData();
+        }
+        fetchISOTypeMaster();
+    }, [selectIsoType]);
 
     const handleSubmit = async () => {
         const payload = Object.values(responses).map(r => {
@@ -263,41 +272,42 @@ const MatrixFour = () => {
         });
         const data = await res.json();
         alert(data.message);
-    }    
-
-    function addQuestionToClause(clauseID, newQuestion, isoForClause) {
-        setMatrix(prevMatrix => {
-            // Deep copy yAxis tree
-            const deepCopy = JSON.parse(JSON.stringify(prevMatrix));
-
-            let clauseFound = false;
-
-            function traverse(node) {
-                if (node.clause._id === clauseID) {
-                    node.questions.push(newQuestion);
-                    clauseFound = true;
-                    return;
-                }
-                for (let child of node.children) {
-                    traverse(child);
-                    if (clauseFound) return;
-                }
-            }
-
-            for (let root of deepCopy.yAxis) {
-                traverse(root);
-                if (clauseFound) break;
-            }
-
-            return {
-                ...deepCopy,
-                questionIsoMap: {
-                    ...deepCopy.questionIsoMap,
-                    [newQuestion._id]: isoForClause?.[clauseID] || []
-                }
-            };
-        });
     }
+
+    // Not using this currently
+    // function addQuestionToClause(clauseID, newQuestion, isoForClause) {
+    //     setMatrix(prevMatrix => {
+    //         // Deep copy yAxis tree
+    //         const deepCopy = JSON.parse(JSON.stringify(prevMatrix));
+
+    //         let clauseFound = false;
+
+    //         function traverse(node) {
+    //             if (node.clause._id === clauseID) {
+    //                 node.questions.push(newQuestion);
+    //                 clauseFound = true;
+    //                 return;
+    //             }
+    //             for (let child of node.children) {
+    //                 traverse(child);
+    //                 if (clauseFound) return;
+    //             }
+    //         }
+
+    //         for (let root of deepCopy.yAxis) {
+    //             traverse(root);
+    //             if (clauseFound) break;
+    //         }
+
+    //         return {
+    //             ...deepCopy,
+    //             questionIsoMap: {
+    //                 ...deepCopy.questionIsoMap,
+    //                 [newQuestion._id]: isoForClause?.[clauseID] || []
+    //             }
+    //         };
+    //     });
+    // }
 
 
     const handleAddNewQuestion = async (clauseID) => {
@@ -307,75 +317,101 @@ const MatrixFour = () => {
         //     name: questionName
         // }, isoForClause);
         // setQuestionMasterModel(false);
-        const response = await fetch(`${API_URL}/add-question-clause`,{
+        const response = await fetch(`${API_URL}/add-question-clause`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 name: questionName,
-                masterId:clauseID,
+                masterId: clauseID,
                 isoQuestion: isoForClause?.[clauseID]
-            })            
+            })
         })
         setQuestionMasterModel(false);
     };
 
     return (
         <div>
-            {/* <div className="mb-10">
-        {JSON.stringify(responses)}
-      </div>
-      <div>
-        {JSON.stringify(remarks)}
-      </div> */}
-            {/* <div>{JSON.stringify(matrix)}</div> */}
-            <div className="max-w-full overflow-x-auto mb-10">
-                <div className="max-h-[480px] overflow-y-auto">
-                    <table className="min-w-full border border-collapse border-slate-700">
-                        <thead className="bg-blue-100">
-                            <tr>
-                                <th className="border border-slate-700 p-2 text-left">Clause / Question</th>
-                                {matrix?.xAxis?.map((iso) => (
-                                    <th key={iso._id} className="border border-slate-700 p-2 text-center">
-                                        {iso.name}
-                                    </th>
-                                ))}
-                                <th className="w-[300px] border border-slate-700 p-2 text-left">Remarks</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                (
-                                    <MatrixRows
-                                        clauseNodes={matrix?.yAxis || []}
-                                        isoList={matrix?.xAxis || []}
-                                        isoMap={matrix?.isoMap || []}
-                                        questionIsoMap={matrix?.questionIsoMap || []}
-                                        responses={responses}
-                                        setResponses={setResponses}
-                                        remarks={remarks}
-                                        setRemarks={setRemarks}
-                                        setClauseID={setClauseID}
-                                        setQuestionMasterModel={setQuestionMasterModel}
-                                        setIsos={setIsos}
-                                        setIsoForClause={setIsoForClause}
-                                    />
-                                )
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <div className="mb-10 flex gap-[60px]">
+                <label>Select Location</label>
+                <select className="w-[200px]">
+                    <option value="">Select</option>
+                    <option value="Location A">Location A</option>
+                    <option value="Location B">Location B</option>
+                    <option value="Location C">Location C</option>
 
-            <div>
-                <button
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-                    onClick={handleSubmit}
+                </select>
+            </div>           
+            <div className="mb-10 flex gap-2">
+                <label>Select ISO Master Type</label>
+                <select
+                    className="w-[200px]"
+                    onChange={(e) => setSelectIsoType(e.target.value)}
                 >
-                    Save
-                </button>
+                    <option value="">Select</option>
+                    {isoTypeMaster.map((item) => (
+                        <option
+                            key={item._id}
+                            value={item._id}
+                        >
+                            {item.name}
+                        </option>
+                    ))}
+                </select>
             </div>
+            {
+                selectIsoType
+                &&
+                <>
+                    <div className="max-w-full overflow-x-auto mb-10">
+                        <div className="max-h-[480px] overflow-y-auto">
+                            <table className="min-w-full border border-collapse border-slate-700">
+                                <thead className="bg-blue-100">
+                                    <tr>
+                                        <th className="border border-slate-700 p-2 text-left">Clause / Question</th>
+                                        {matrix?.xAxis?.map((iso) => (
+                                            <th key={iso._id} className="border border-slate-700 p-2 text-center">
+                                                {iso.name}
+                                            </th>
+                                        ))}
+                                        <th className="w-[300px] border border-slate-700 p-2 text-left">Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        (
+                                            <MatrixRows
+                                                clauseNodes={matrix?.yAxis || []}
+                                                isoList={matrix?.xAxis || []}
+                                                isoMap={matrix?.isoMap || []}
+                                                questionIsoMap={matrix?.questionIsoMap || []}
+                                                responses={responses}
+                                                setResponses={setResponses}
+                                                remarks={remarks}
+                                                setRemarks={setRemarks}
+                                                setClauseID={setClauseID}
+                                                setQuestionMasterModel={setQuestionMasterModel}
+                                                setIsos={setIsos}
+                                                setIsoForClause={setIsoForClause}
+                                            />
+                                        )
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button
+                            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+                            onClick={handleSubmit}
+                        >
+                            Save
+                        </button>
+                    </div>
+                </>
+            }
 
             {
                 questionMasterModal
@@ -397,7 +433,7 @@ const MatrixFour = () => {
                         </div>
                         <div className="mt-5 flex flex-col gap-5">
                             <span className="text-lg font-semibold">
-                                Question Name 
+                                Question Name
                                 {/* {clauseID} */}
                             </span>
                             <input
@@ -411,34 +447,34 @@ const MatrixFour = () => {
                             <div>
                                 <label className="text-xl font-semibold">ISO Attributes</label>
                                 <div className="flex flex-col mt-2">
-                                    {isos.map((item) => (                                        
+                                    {isos.map((item) => (
                                         <div className="flex gap-2 items-center">
                                             {(matrix?.isoMap?.[clauseID] || [])?.includes(item._id)
-                                            &&
-                                            <>
-                                            <input
-                                                type="checkbox"
-                                                checked={isoForClause?.[clauseID]?.includes(item._id)}
-                                                className="align-middle"
-                                                value={item._id}
-                                                onChange={(e) => {
-                                                    const isChecked = e.target.checked;
-                                                    setIsoForClause(prev => {
-                                                        const currentList = prev[clauseID] || [];
+                                                &&
+                                                <>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isoForClause?.[clauseID]?.includes(item._id)}
+                                                        className="align-middle"
+                                                        value={item._id}
+                                                        onChange={(e) => {
+                                                            const isChecked = e.target.checked;
+                                                            setIsoForClause(prev => {
+                                                                const currentList = prev[clauseID] || [];
 
-                                                        const updatedList = isChecked
-                                                            ? [...new Set([...currentList, item._id])] // Add item._id if checked
-                                                            : currentList.filter(id => id !== item._id); // Remove if unchecked
+                                                                const updatedList = isChecked
+                                                                    ? [...new Set([...currentList, item._id])] // Add item._id if checked
+                                                                    : currentList.filter(id => id !== item._id); // Remove if unchecked
 
-                                                        return {
-                                                            ...prev,
-                                                            [clauseID]: updatedList
-                                                        };
-                                                    });
-                                                }}
-                                            />
-                                            <label className="align-middle">{item.name}</label>
-                                            </>}
+                                                                return {
+                                                                    ...prev,
+                                                                    [clauseID]: updatedList
+                                                                };
+                                                            });
+                                                        }}
+                                                    />
+                                                    <label className="align-middle">{item.name}</label>
+                                                </>}
                                         </div>
                                     ))}
                                 </div>
@@ -448,7 +484,7 @@ const MatrixFour = () => {
                                 className="border border-slate-500"
                                 onClick={() => handleAddNewQuestion(clauseID)}
                             >
-                                Add 
+                                Add
                                 {/* {clauseID} */}
                             </button>
 
