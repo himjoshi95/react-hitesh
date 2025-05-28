@@ -234,6 +234,9 @@ const MatrixFour = () => {
     const [isoTypeMaster, setIsoTypeMaster] = useState([]);
     const [selectIsoType, setSelectIsoType] = useState(null);
 
+    const [selectConsultant, setSelectConsultant] = useState('');
+    // const [selectLocation, setSelectLocation]
+
     const fetchISOTypeMaster = async () => {
         const response = await fetch(`${API_URL}/get-isotype-master`)
         const data = await response.json();
@@ -333,32 +336,46 @@ const MatrixFour = () => {
 
     return (
         <div>
-            <div className="mb-10 flex gap-[60px]">
-                <label>Select Location</label>
-                <select className="w-[200px]">
-                    <option value="">Select</option>
-                    <option value="Location A">Location A</option>
-                    <option value="Location B">Location B</option>
-                    <option value="Location C">Location C</option>
+            <div className="flex justify-between items-center border border-slate-500 p-2 rounded">
+                <div className="flex gap-2">
+                    <label>Select Consultant</label>
+                    <select className="w-[200px]">
+                        <option value="">Select</option>
+                        <option value="Consultant A">Consultant A</option>
+                        <option value="Consultant B">Consultant B</option>
+                        <option value="Consultant C">Consultant C</option>
+                        <option value="Consultant D">Consultant D</option>
 
-                </select>
-            </div>           
-            <div className="mb-10 flex gap-2">
-                <label>Select ISO Master Type</label>
-                <select
-                    className="w-[200px]"
-                    onChange={(e) => setSelectIsoType(e.target.value)}
-                >
-                    <option value="">Select</option>
-                    {isoTypeMaster.map((item) => (
-                        <option
-                            key={item._id}
-                            value={item._id}
-                        >
-                            {item.name}
-                        </option>
-                    ))}
-                </select>
+                    </select>
+                </div>           
+                <div className="flex gap-2">
+                    <label>Select Location</label>
+                    <select className="w-[200px]">
+                        <option value="">Select</option>
+                        <option value="Location A">Location A</option>
+                        <option value="Location B">Location B</option>
+                        <option value="Location C">Location C</option>
+                        <option value="Location D">Location D</option>
+
+                    </select>
+                </div>           
+                <div className="flex gap-2">
+                    <label>Select ISO Master Type</label>
+                    <select
+                        className="w-[200px]"
+                        onChange={(e) => setSelectIsoType(e.target.value)}
+                    >
+                        <option value="">Select</option>
+                        {isoTypeMaster.map((item) => (
+                            <option
+                                key={item._id}
+                                value={item._id}
+                            >
+                                {item.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
             {
                 selectIsoType

@@ -17,6 +17,7 @@ const Navbar = () =>{
                         <li><NavLink to='/mapping' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Mapping</NavLink></li>
                         <li><NavLink to='/matrix-four' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>IMS</NavLink></li>
                         <li><NavLink to='/matrix-five' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Process</NavLink></li>
+                        <li><NavLink to='/matrix-six' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>New</NavLink></li>
                         {/* <li><NavLink to='/home' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Home</NavLink></li> */}
                         {/* <li><NavLink to='/signUp' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Sign-up</NavLink></li> */}
                         {/* <li><NavLink to='/data' className={({isActive})=>`${isActive ? 'text-slate-200 font-bold': 'text-white'}`}>Data chart</NavLink></li> */}
