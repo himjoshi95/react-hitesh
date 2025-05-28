@@ -62,7 +62,7 @@ const renderNestedDepartment = (nodes, level = 0, attributes, setDepartmentId, s
                         </div> */}
                     </div>
                 </td>
-                {level != 0 && attributes.map(att => (
+                {attributes.map(att => (
                     <td key={att._id} className="border border-slate-400 p-2 text-center">
                         <select className="py-1 px-2  w-28 rounded focus:outline-none">
                             <option value="select">Select</option>
@@ -73,10 +73,7 @@ const renderNestedDepartment = (nodes, level = 0, attributes, setDepartmentId, s
                     </td>
                 ))}
                 <td className="border border-slate-400 p-2">
-                    {level !== 0
-                        &&
-                        <input type="text" className="p-1 border border-slate-400 rounded-sm" placeholder="Add Remarks.." />
-                    }
+                    <input type="text" className="p-1 border border-slate-400 rounded-sm" placeholder="Add Remarks.." />
                 </td>
 
             </tr>
@@ -163,7 +160,7 @@ const MatrixFive = () => {
                     <table className="border-collapse border w-full min-w-max">
                         <thead className="bg-gray-200">
                             <tr>
-                                <th className="border p-2 text-left sticky top-0 left-0 z-30 bg-gray-200">
+                                <th className="border border-slate-400 p-2 text-left sticky top-0 left-0 z-30 bg-gray-200">
                                     <div className="flex justify-between">
                                         <div className="flex gap-2">
                                             <span>Department</span>
@@ -210,7 +207,7 @@ const MatrixFive = () => {
                                     ))
                                 }
 
-                                <th>Remarks</th>
+                                <th className="border border-slate-400 p-2 text-left sticky top-0 left-0 z-30 bg-gray-200">Remarks</th>
                             </tr>
                         </thead>
                         <tbody>

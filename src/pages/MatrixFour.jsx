@@ -133,7 +133,7 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, r
         <React.Fragment key={clauseNode.clause._id}>
             <tr className="bg-gray-100">
                 <td
-                    className="flex gap-2"
+                    className="flex gap-2 sticky left-0 z-10"
                     colSpan={isoList.length + 2}
                     style={{ paddingLeft: `${level * 16}px` }}
                 >
@@ -336,7 +336,7 @@ const MatrixFour = () => {
 
     return (
         <div>
-            <div className="flex justify-between items-center border border-slate-500 p-2 rounded">
+            <div className="flex justify-between items-center border border-slate-500 p-2 rounded mb-5">
                 <div className="flex gap-2">
                     <label>Select Consultant</label>
                     <select className="w-[200px]">
@@ -382,17 +382,17 @@ const MatrixFour = () => {
                 &&
                 <>
                     <div className="max-w-full overflow-x-auto mb-10">
-                        <div className="max-h-[480px] overflow-y-auto">
-                            <table className="min-w-full border border-collapse border-slate-700">
-                                <thead className="bg-blue-100">
+                        <div className="max-h-[480px] overflow-y-auto relative">
+                            <table className="border-collapse border w-full min-w-max">
+                                <thead className="bg-gray-200">
                                     <tr>
-                                        <th className="border border-slate-700 p-2 text-left">Clause / Question</th>
+                                        <th className="border border-slate-400 p-2 text-left sticky top-0 left-0 z-30 bg-gray-200">Clause / Question</th>
                                         {matrix?.xAxis?.map((iso) => (
-                                            <th key={iso._id} className="border border-slate-700 p-2 text-center">
+                                            <th key={iso._id} className="border border-slate-400 p-2 text-center sticky top-0 bg-gray-200 z-20">
                                                 {iso.name}
                                             </th>
                                         ))}
-                                        <th className="w-[300px] border border-slate-700 p-2 text-left">Remarks</th>
+                                        <th className="w-[300px] border border-slate-400 p-2 text-center sticky top-0 bg-gray-200 z-20">Remarks</th>
                                     </tr>
                                 </thead>
                                 <tbody>

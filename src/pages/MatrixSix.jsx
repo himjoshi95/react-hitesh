@@ -1,134 +1,54 @@
 import React, { useEffect, useState } from "react";
 
 
-// const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, responses, setResponses, remarks, setRemarks, setClauseID, setQuestionMasterModel, setIsos, setIsoForClause }) => {
-//     const updateResponse = (clauseId, questionId, isoId, field, value) => {
-//         const key = `${questionId}_${isoId}`;
-//         setResponses(prev => ({
-//             ...prev,
-//             [key]: {
-//                 ...(prev[key] || {}),
-//                 clauseId,
-//                 questionId,
-//                 isoId,
-//                 [field]: value
-//             },
-//         }));
-//     };
-
-//     return clauseNodes.map((clauseNode) => (
-//         <React.Fragment key={clauseNode.clause._id}>
-//             <tr className="bg-gray-100">
-//                 <td
-//                     className="flex gap-2"
-//                     colSpan={isoList.length + 2}
-//                     style={{ paddingLeft: `${level * 16}px` }}
-//                 >
-//                     <div className="font-semibold pb-2">
-
-//                         {clauseNode.clause.name !== 'Clause Master' && (`${clauseNode?.clause?.number ?? ""} ${clauseNode.clause.name}`)}
-//                     </div>
-//                     {
-//                         clauseNode.clause.name !== 'Clause Master'
-//                         &&
-//                         <div>
-//                             <span
-//                                 className="text-sm border bg-white shadow-xl shadow-blue-200 font-bold align-top p-1 hover:cursor-pointer hover:border-blue-500 hover:text-blue-500 duration-300"
-//                                 onClick={() => {
-//                                     setIsos(isoList)
-//                                     setClauseID(clauseNode.clause._id);
-//                                     setQuestionMasterModel(true);
-//                                     setIsoForClause(isoMap)
-//                                 }}
-//                             >
-//                                 Q+
-//                             </span>
-//                         </div>
-//                     }
-//                 </td>
-//             </tr>
-
-//             {clauseNode.questions.map((q) => (
-//                 <tr key={q._id}>
-//                     <td className="sticky left-0 bg-white z-10 border border-slate-700 w-[400px] py-1" style={{ paddingLeft: `${level * 40}px` }}>{q.name} </td>
-//                     {isoList.map((iso) => {
-//                         // const isMapped = isoMap[clauseNode.clause._id]?.includes(iso._id);
-//                         const isMapped = questionIsoMap[q._id]?.includes(iso._id);
-//                         const key = `${q._id}_${iso._id}`;
-//                         return (
-//                             <td key={iso._id} className={`text-center border border-slate-700 ${isMapped ? 'bg-green-400' : 'bg-red-400'}`}>
-//                                 {isMapped
-//                                     ?
-//                                     <Dropdown
-//                                         value={responses[key]?.response || ""}
-//                                         onChange={(e) => updateResponse(clauseNode.clause._id, q._id, iso._id, 'response', e.target.value)}
-//                                     />
-//                                     :
-//                                     null
-//                                 }
-//                             </td>
-//                         );
-//                     })}
-//                     <td className="border border-slate-700 p-1">
-//                         <input
-//                             type="text"
-//                             placeholder="Add remarks"
-//                             className="w-full p-1 border border-gray-300"
-//                             value={remarks[q._id] || ""}
-//                             onChange={(e) => setRemarks(prev => ({ ...prev, [q._id]: e.target.value }))}
-//                         // onChange={(e) => {
-//                         //   const isoId = isoList.find(iso => isoMap[clauseNode.clause._id]?.includes(iso._id))?._id;
-//                         //   if (isoId) updateResponse(clauseNode.clause._id, q._id, isoId, 'remark', e.target.value);
-//                         // }}
-
-//                         />
-//                     </td>
-//                 </tr>
-//             ))}
-
-//             {clauseNode.children?.length > 0 && (
-//                 <MatrixRows
-//                     clauseNodes={clauseNode.children}
-//                     isoList={isoList}
-//                     isoMap={isoMap}
-//                     questionIsoMap={questionIsoMap}
-//                     level={level + 1}
-//                     responses={responses}
-//                     setResponses={setResponses}
-//                     remarks={remarks}
-//                     setRemarks={setRemarks}
-//                     setClauseID={setClauseID}
-//                     setQuestionMasterModel={setQuestionMasterModel}
-//                     setIsos={setIsos}
-//                     setIsoForClause={setIsoForClause}
-//                 />
-//             )}
-//         </React.Fragment>
-//     ));
-// };
-
-const MatrixRows = ({ clauseNodes, isoList, level=0}) => {
+const MatrixRows = ({ clauseNodes, isoList, level=0,setClauseId,setShowAddClauseModal,setShowQuestionModal,setQuestionName}) => {
     
     return clauseNodes?.map((clauseNode) => (
         <React.Fragment key={clauseNode.clause._id}>
             {
                 clauseNode.clause.name !== 'Clause Master' && 
                 <tr className="bg-gray-100">
-                    <td style={{ paddingLeft: `${level * 16}px` }}>
-                        {clauseNode.clause.name}
+                    <td
+                        className="border" 
+                        style={{ paddingLeft: `${level * 16}px` }}
+                    >
+                        <div className="flex gap-2 items-center">
+                            <span>{clauseNode.clause.name}</span>
+                            <span 
+                                className="flex items-center justify-center border border-blue-500 text-blue-500 h-6 w-6 rounded-full hover:cursor-pointer hover:shadow-md hover:shadow-blue-400 duration-200"
+                                onClick={() => {
+                                    setClauseId(clauseNode.clause._id)
+                                    setShowAddClauseModal(true)
+                                }}
+                            >
+                                <span>+</span>
+                            </span>
+                            <span 
+                                className="p-1 flex items-center justify-center border border-blue-500 text-blue-500 h-6 w-6 rounded-full hover:cursor-pointer hover:shadow-md hover:shadow-blue-400 duration-200"
+                                onClick={() => {
+                                    setClauseId(clauseNode.clause._id)
+                                    setShowQuestionModal(true)
+                                }}
+                            >
+                                <div>
+                                    <span className="text-sm">Q</span>
+                                    <span>+</span>
+                                </div>
+                            </span>
+                        </div>
                     </td>
                     {isoList.map(iso =>(
-                        <td className="text-center">
+                        <td className="text-center border">
                             <input type="checkbox"/>
                         </td>
                     ))}
                 </tr>
             }
             {clauseNode.questions.map((q) => (
-                <tr key={q._id}>
-                    <td className="sticky left-0 bg-white z-10 border border-slate-700 w-[400px] py-1" style={{ paddingLeft: `${level * 40}px` }}>{q.name}</td>
+                <tr key={q._id} className="bg-gray-100">
+                    <td className="sticky left-0 bg-white z-10 border w-[400px] py-1" style={{ paddingLeft: `${level * 40}px` }}>{q.name}</td>
                     {isoList.map((iso) => (
-                        <td key={iso._id} className="text-center">
+                        <td key={iso._id} className="text-center border">
                             <input type="checkbox"/>
                         </td>
                     ))}
@@ -139,6 +59,10 @@ const MatrixRows = ({ clauseNodes, isoList, level=0}) => {
                     clauseNodes={clauseNode.children}
                     isoList={isoList}
                     level={level+1}
+                    setClauseId={setClauseId}
+                    setShowAddClauseModal={setShowAddClauseModal}
+                    setShowQuestionModal = {setShowQuestionModal}
+                    setQuestionName={setQuestionName}
                 />
             )}
 
@@ -149,6 +73,15 @@ const API_URL = 'http://localhost:3009';
 const MatrixSix = () => {
     const [matrix, setMatrix] = useState({});
 
+    //add-clause
+    const [clauseId, setClauseId] = useState(null);
+    const [showAddClauseModal,setShowAddClauseModal] = useState(false);
+    const [clauseName,setClauseName] = useState('');
+
+    //add-Question
+    const [showQuestionModal,setShowQuestionModal] = useState(false);
+    const [questionName, setQuestionName] = useState('');
+
     const fetchData  = async () => {
         const response = await fetch(`${API_URL}/get-matrix-clause-question-iso`);
         const data = await response.json();
@@ -157,7 +90,37 @@ const MatrixSix = () => {
 
     useEffect(()=>{
         fetchData();
-    });
+    },[showAddClauseModal,showQuestionModal]);
+
+    const handleAddClauseMaster = async(id) => {
+        const response = await fetch(`${API_URL}/add-sub-master`,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: clauseName,
+                parentId: id
+            })
+        });
+        setShowAddClauseModal(false);
+        setClauseName('')
+    };
+
+    const handleAddNewQuestion = async(id) => {
+        const response = await fetch(`${API_URL}/add-question-clause-main`,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: questionName,
+                masterId: clauseId
+            })
+        })
+        setShowQuestionModal(false);
+        setQuestionName('')
+    };
 
     return (
         <div>
@@ -166,7 +129,18 @@ const MatrixSix = () => {
                     <table className="border-collapse border w-full min-w-max">
                         <thead className="bg-gray-200">
                             <th className="border border-slate-400 p-2 text-left sticky top-0 left-0 z-30 bg-gray-200">
-                                Clauses
+                                <div className="flex gap-2">
+                                    <span>Clause</span>
+                                    <span 
+                                        className="flex items-center justify-center border border-blue-500 text-blue-500 h-6 w-6 rounded-full hover:cursor-pointer hover:shadow-md hover:shadow-blue-400 duration-200"
+                                        onClick={()=>{
+                                            setClauseId('6836da8919b98636c722acf2');
+                                            setShowAddClauseModal(true);
+                                        }}
+                                    >
+                                        <span>+</span>
+                                    </span>
+                                </div>
                             </th>
                             {matrix?.xAxis?.map((iso) => (
                                 <th 
@@ -182,6 +156,10 @@ const MatrixSix = () => {
                                 <MatrixRows
                                     clauseNodes={matrix?.yAxis || []}
                                     isoList={matrix?.xAxis || []}
+                                    setClauseId={setClauseId}
+                                    setShowAddClauseModal={setShowAddClauseModal}
+                                    setShowQuestionModal = {setShowQuestionModal}
+                                    setQuestionName={setQuestionName}
                                 />
                             }
 
@@ -189,6 +167,79 @@ const MatrixSix = () => {
                     </table>
                 </div>
             </div>
+
+            {/* showaddClauseModal */}
+            {
+            showAddClauseModal
+            &&
+            <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50 p-5">
+                <div className="w-[600px] rounded bg-white p-10 overflow-y-auto">
+                    <div className="flex justify-between mb-5">
+                        <span className="font-semibold text-xl underline">Add Clause</span>
+                        <span
+                            className="font-semibold text-lg hover:cursor-pointer"
+                            onClick={() => setShowAddClauseModal(false)}
+                        >
+                            X
+                        </span>
+                    </div>
+                    <div className="mt-2 flex flex-col gap-2">
+                        <span className="text-lg">Name</span>
+                        <input
+                                type="text"
+                                className="border border-slate-500 rounded p-1 px-2 focus:outline-none mb-5"
+                                placeholder="Add Here...."
+                                value={clauseName}
+                                onChange={(e) => setClauseName(e.target.value)}
+                        />
+                        <button
+                                type="submit"
+                                className="border border-blue-500 text-blue-500"
+                                onClick={() => handleAddClauseMaster(clauseId)}
+                            >
+                                Add
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            }
+
+            {
+            showQuestionModal
+            &&
+            <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50 p-5">
+                <div className="w-[600px] rounded bg-white p-10 overflow-y-auto">
+                    <div className="flex justify-between mb-5">
+                        <span className="font-semibold text-xl underline">Add Question</span>
+                        <span
+                            className="font-semibold text-lg hover:cursor-pointer"
+                            onClick={() => setShowQuestionModal(false)}
+                        >
+                            X
+                        </span>
+                    </div>
+                    <div className="mt-2 flex flex-col gap-2">
+                        <span className="text-lg">Name</span>
+                        <input
+                                type="text"
+                                className="border border-slate-500 rounded p-1 px-2 focus:outline-none mb-5"
+                                placeholder="Add Here...."
+                                value={questionName}
+                                onChange={(e) => setQuestionName(e.target.value)}
+                        />
+                        <button
+                                type="submit"
+                                className="border border-blue-500 text-blue-500"
+                                onClick={() => handleAddNewQuestion(clauseId)}
+                        >
+                                Add
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            }
         </div>
     )
 }
