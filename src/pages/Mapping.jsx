@@ -182,7 +182,7 @@ const Mapping = () => {
         <div className="min-h-screen">
 
             <div className="mb-5">
-                {/* {JSON.stringify(selected)} */}
+                {JSON.stringify(selected)}
                 {/* {mappingType} */}
             </div>
             {/* Above section */}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 
-const MatrixRows = ({ clauseNodes, isoList, level=0,setClauseId,setShowAddClauseModal,setShowQuestionModal,setQuestionName}) => {
+const MatrixRows = ({ clauseNodes, isoList, level=0,setClauseId,setShowAddClauseModal,setShowQuestionModal,setQuestionName,clauseIsoSelection,toggleMapping,questionIsoSelection,toggleQuestionMapping}) => {
     
     return clauseNodes?.map((clauseNode) => (
         <React.Fragment key={clauseNode.clause._id}>
@@ -9,7 +9,7 @@ const MatrixRows = ({ clauseNodes, isoList, level=0,setClauseId,setShowAddClause
                 clauseNode.clause.name !== 'Clause Master' && 
                 <tr className="bg-gray-100">
                     <td
-                        className="border" 
+                        className="border sticky top-0 left-0 z-30 bg-gray-100" 
                         style={{ paddingLeft: `${level * 16}px` }}
                     >
                         <div className="flex gap-2 items-center">
@@ -37,21 +37,40 @@ const MatrixRows = ({ clauseNodes, isoList, level=0,setClauseId,setShowAddClause
                             </span>
                         </div>
                     </td>
-                    {isoList.map(iso =>(
-                        <td className="text-center border">
-                            <input type="checkbox"/>
-                        </td>
-                    ))}
+                    {isoList.map(iso =>{
+                        const key=`${clauseNode.clause._id}_${iso._id}`
+
+                        return (
+                            <td className="text-center border">
+                                <input 
+                                    type="checkbox"
+                                    checked={clauseIsoSelection[key] || false}
+                                    onChange={() => toggleMapping(clauseNode.clause._id,iso._id)}                                
+                                />
+                                {/* {key} */}
+                            </td>
+                        )
+                    })}
                 </tr>
             }
             {clauseNode.questions.map((q) => (
                 <tr key={q._id} className="bg-gray-100">
                     <td className="sticky left-0 bg-white z-10 border w-[400px] py-1" style={{ paddingLeft: `${level * 40}px` }}>{q.name}</td>
-                    {isoList.map((iso) => (
-                        <td key={iso._id} className="text-center border">
-                            <input type="checkbox"/>
-                        </td>
-                    ))}
+                    {isoList.map((iso) => {
+                        const key=`${q._id}_${iso._id}`
+
+                        return (
+                            <td key={iso._id} className="text-center border">
+                                <input 
+                                    type="checkbox"
+                                    checked={questionIsoSelection[key] || false}
+                                    onChange={() => toggleQuestionMapping(q._id,iso._id)}
+                                />
+                                {/* {key} */}
+                            </td>
+                        )
+                    }
+                    )}
                 </tr>
             ))}
             {clauseNode.children?.length > 0 && (
@@ -63,6 +82,10 @@ const MatrixRows = ({ clauseNodes, isoList, level=0,setClauseId,setShowAddClause
                     setShowAddClauseModal={setShowAddClauseModal}
                     setShowQuestionModal = {setShowQuestionModal}
                     setQuestionName={setQuestionName}
+                    clauseIsoSelection={clauseIsoSelection}
+                    toggleMapping={toggleMapping}
+                    questionIsoSelection={questionIsoSelection}
+                    toggleQuestionMapping={toggleQuestionMapping}
                 />
             )}
 
@@ -81,6 +104,12 @@ const MatrixSix = () => {
     //add-Question
     const [showQuestionModal,setShowQuestionModal] = useState(false);
     const [questionName, setQuestionName] = useState('');
+
+    //clause-iso selection
+    const [clauseIsoSelection, setClauseIsoSelection] = useState({});
+    //question-iso selection
+    const [questionIsoSelection,setQuestionIsoSelection] = useState({});
+    
 
     const fetchData  = async () => {
         const response = await fetch(`${API_URL}/get-matrix-clause-question-iso`);
@@ -122,13 +151,43 @@ const MatrixSix = () => {
         setQuestionName('')
     };
 
+    const toggleMapping =(fromId,toId) => {
+        const key=`${fromId}_${toId}`;
+        setClauseIsoSelection(prev => ({ ...prev, [key]: !prev[key]}))
+    };
+
+    const toggleQuestionMapping = (fromId,toId) => {
+        const key=`${fromId}_${toId}`;
+        setQuestionIsoSelection(prev => ({ ...prev, [key]: !prev[key]}))
+    };
+
+    const handleSubmit = async() => {
+        const mappings =Object.entries(clauseIsoSelection)
+            .filter(([_, v]) => v)
+            .map(([key]) => {
+                const [fromId, toId] = key.split('_');
+                return { fromId, toId };
+            })
+
+        console.log(mappings);
+
+    };
+
     return (
         <div>
+            <div>
+                {/* <div>
+                    {JSON.stringify(clauseIsoSelection)}
+                </div>
+                <div>
+                    {JSON.stringify(questionIsoSelection)}
+                </div> */}
+            </div>
             <div className="mt-5 overflow-x-auto">
                 <div className="max-h-[500px] overflow-y-auto relative">
                     <table className="border-collapse border w-full min-w-max">
                         <thead className="bg-gray-200">
-                            <th className="border border-slate-400 p-2 text-left sticky top-0 left-0 z-30 bg-gray-200">
+                            <th className="border border-slate-400 p-2 text-left sticky top-0 left-0 z-40 bg-gray-200">
                                 <div className="flex gap-2">
                                     <span>Clause</span>
                                     <span 
@@ -160,12 +219,24 @@ const MatrixSix = () => {
                                     setShowAddClauseModal={setShowAddClauseModal}
                                     setShowQuestionModal = {setShowQuestionModal}
                                     setQuestionName={setQuestionName}
+                                    clauseIsoSelection={clauseIsoSelection}
+                                    toggleMapping={toggleMapping}
+                                    questionIsoSelection={questionIsoSelection}
+                                    toggleQuestionMapping={toggleQuestionMapping}
                                 />
                             }
 
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div>
+                <button
+                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+                    onClick={handleSubmit}
+                >
+                    Save
+                </button>
             </div>
 
             {/* showaddClauseModal */}
