@@ -18,7 +18,7 @@ const Dropdown = ({ value, options, setValue }) => (
     </select>
 );
 
-const API_URL = 'http://localhost:3009'
+const API_URL = 'http://localhost:3008'
 const MasterNew = () => {
 
     const [masterName, setMasterName] = useState("");
@@ -79,7 +79,7 @@ const MasterNew = () => {
         return clauseNodes?.map((clauseNode) =>(
             <div key={clauseNode.clause._id} className="ml-1 mt-2 border border-blue-500 rounded mb-1 p-2 shadow-xl">
                 <div className="flex gap-1 items-center" style={{ paddingLeft: `${level * 16}px` }}>
-                    <Dot sixe={30}/>
+                    <Dot size={30}/>
                     <label>{clauseNode.clause.number ? clauseNode.clause.number: "" }</label>
                     <label>{clauseNode.clause.name}</label>
                     <span 

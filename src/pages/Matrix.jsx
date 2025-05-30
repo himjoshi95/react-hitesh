@@ -8,9 +8,9 @@ const Matrix = () => {
   useEffect(() => {
     // Simulated fetch
     async function fetchData() {
-      const {xAxis} = await fetch('http://localhost:3009/categories').then(res => res.json());
-      const {yAxis} = await fetch('http://localhost:3009/questions').then(res => res.json());
-      const {cellValues:valuesFromDB} = await fetch('http://localhost:3009/matrix-values').then(res => res.json());
+      const {xAxis} = await fetch('http://localhost:3008/categories').then(res => res.json());
+      const {yAxis} = await fetch('http://localhost:3008/questions').then(res => res.json());
+      const {cellValues:valuesFromDB} = await fetch('http://localhost:3008/matrix-values').then(res => res.json());
         
       setCategories(xAxis);
       setQuestions(yAxis);
