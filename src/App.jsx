@@ -24,6 +24,14 @@ import Mapping from './pages/Mapping';
 import MasterNew from './pages/MasterNew';
 import MatrixFive from './pages/MatrixFive';
 import MatrixSix from './pages/MatrixSix';
+import Excel from './pages/Excel';
+import ProtectedExcel from './pages/ProtectedExcel';
+import ExportTable from './pages/ExportTable';
+import PartOne from './pages/ReactHookForms/PartOne';
+import PartTwo from './pages/ReactHookForms/PartTwo';
+import StackedBarChart from './pages/Charts/StackedBarChart';
+import Gallery from './pages/Gallery';
+import ReportAnalysis from './pages/ReportAnalysis';
 
 
 
@@ -58,6 +66,14 @@ function App() {
           <Route path='/master-new' element={<MasterNew/>}/>
           <Route path='/matrix-five' element={<MatrixFive/>}/>
           <Route path='/matrix-six' element={<MatrixSix/>}/>
+          <Route path='/excel' element={<Excel/>}/>
+          <Route path='/protected-excel' element={<ProtectedExcel/>}/>
+          <Route path='/export-table' element={<ExportTable/>}/>
+          <Route path='/part-one' element={<PartOne/>}/>
+          <Route path='/part-two' element={<PartTwo/>}/>
+          <Route path='/stacked-bar-chart' element={<StackedBarChart/>}/>
+          <Route path='/gallery' element={<Gallery/>}/>
+          <Route path='/report-analysis' element={<ReportAnalysis/>}/>
         </Routes>
         </HelmetProvider>
       </div>

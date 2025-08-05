@@ -114,20 +114,53 @@ const Dropdown = ({ value, onChange }) => (
     </select>
 );
 
-const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, responses, setResponses, remarks, setRemarks, setClauseID, setQuestionMasterModel, setIsos, setIsoForClause }) => {
+const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, responses, setResponses, remarks, setRemarks, setClauseID, setQuestionMasterModel, setIsos, setIsoForClause, setMatrixResponse,matrixResponse }) => {
+    // const updateResponse = (clauseId, questionId, isoId, field, value) => {
+    //     const key = `${questionId}_${isoId}`;
+    //     setResponses(prev => ({
+    //         ...prev,
+    //         [key]: {
+    //             ...(prev[key] || {}),
+    //             clauseId,
+    //             questionId,
+    //             isoId,
+    //             [field]: value
+    //         },
+    //     }));
+    // };
+
     const updateResponse = (clauseId, questionId, isoId, field, value) => {
-        const key = `${questionId}_${isoId}`;
-        setResponses(prev => ({
-            ...prev,
-            [key]: {
-                ...(prev[key] || {}),
-                clauseId,
-                questionId,
-                isoId,
-                [field]: value
-            },
-        }));
-    };
+  setMatrixResponse(prev => {
+    const existingIndex = prev.findIndex(item => item.question === questionId);
+
+    if (existingIndex !== -1) {
+      const updated = [...prev];
+      const existing = { ...updated[existingIndex] };
+
+      if (field === "remark") {
+        existing.remark = value;
+      } else {
+        existing.imsResponse = {
+          ...existing.imsResponse,
+          [isoId]: value,
+        };
+      }
+
+      updated[existingIndex] = existing;
+      return updated;
+    } else {
+      return [
+        ...prev,
+        {
+          clause: clauseId,
+          question: questionId,
+          imsResponse: field === "remark" ? {} : { [isoId]: value },
+          remark: field === "remark" ? value : "",
+        },
+      ];
+    }
+  });
+};
 
     return clauseNodes.map((clauseNode) => (
         <React.Fragment key={clauseNode.clause._id}>
@@ -173,8 +206,12 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, r
                                 {isMapped
                                     ?
                                     <Dropdown
-                                        value={responses[key]?.response || ""}
-                                        onChange={(e) => updateResponse(clauseNode.clause._id, q._id, iso._id, 'response', e.target.value)}
+                                        // value={responses[key]?.response || ""}
+                                        value={matrixResponse.find((r) => r.question === q._id)?.imsResponse?.[iso._id] || ""}
+                                        // onChange={(e) => updateResponse(clauseNode.clause._id, q._id, iso._id, 'response', e.target.value)}
+                                        onChange={(e) => 
+                                            updateResponse(clauseNode.clause._id, q._id, iso._id, "response", e.target.value)
+                                        }
                                     />
                                     :
                                     null
@@ -187,9 +224,13 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, r
                             type="text"
                             placeholder="Add remarks"
                             className="w-full p-1 border border-gray-300"
-                            value={remarks[q._id] || ""}
-                            onChange={(e) => setRemarks(prev => ({ ...prev, [q._id]: e.target.value }))}
-                        // onChange={(e) => {
+                            // value={remarks[q._id] || ""}
+                            value={matrixResponse.find((r) => r.question === q._id)?.remark || ""}
+                            // onChange={(e) => setRemarks(prev => ({ ...prev, [q._id]: e.target.value }))}
+                            onChange={(e) =>
+      updateResponse(clauseNode.clause._id, q._id, "", "remark", e.target.value)
+    }
+                            // onChange={(e) => {
                         //   const isoId = isoList.find(iso => isoMap[clauseNode.clause._id]?.includes(iso._id))?._id;
                         //   if (isoId) updateResponse(clauseNode.clause._id, q._id, isoId, 'remark', e.target.value);
                         // }}
@@ -214,6 +255,8 @@ const MatrixRows = ({ clauseNodes, isoList, isoMap, questionIsoMap, level = 0, r
                     setQuestionMasterModel={setQuestionMasterModel}
                     setIsos={setIsos}
                     setIsoForClause={setIsoForClause}
+                    setMatrixResponse={setMatrixResponse}
+                    matrixResponse={matrixResponse}
                 />
             )}
         </React.Fragment>
@@ -232,10 +275,12 @@ const MatrixFour = () => {
     const [isos, setIsos] = useState([]);
     const [isoForClause, setIsoForClause] = useState({});
     const [isoTypeMaster, setIsoTypeMaster] = useState([]);
+    //not needed
     const [selectIsoType, setSelectIsoType] = useState(null);
 
     const [selectConsultant, setSelectConsultant] = useState('');
     // const [selectLocation, setSelectLocation]
+    const [matrixResponse , setMatrixResponse ] = useState([]);
 
     const fetchISOTypeMaster = async () => {
         const response = await fetch(`${API_URL}/get-isotype-master`)
@@ -377,6 +422,9 @@ const MatrixFour = () => {
                     </select>
                 </div>
             </div>
+            <div>
+                {JSON.stringify(matrixResponse)}
+            </div>
             {
                 selectIsoType
                 &&
@@ -411,6 +459,8 @@ const MatrixFour = () => {
                                                 setQuestionMasterModel={setQuestionMasterModel}
                                                 setIsos={setIsos}
                                                 setIsoForClause={setIsoForClause}
+                                                setMatrixResponse={setMatrixResponse}
+                                                matrixResponse={matrixResponse}
                                             />
                                         )
                                     }
