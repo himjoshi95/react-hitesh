@@ -21,6 +21,8 @@ const ReportAnalysisTwo = () => {
 
     const [apiData, setApiData] = useState([]);
 
+    const [isoOrderList, setIsoOrderList] = useState([]);
+
     const fetchCategory = async () => {
         const response = await axios.get(`${API_URL}/get-category-master`);
         setCategoryList(response.data.category || []);
@@ -41,6 +43,7 @@ const ReportAnalysisTwo = () => {
             const response = await axios.get(`${API_URL}/get-categoryWise-location-isoTypeMaster-isos?category=${selectedCategory}`);
             console.log(response.data)
             setLocationList(response.data.locationList);
+            setIsoOrderList(response.data.isoListNames);
         } catch (error) {
             console.log("Error in fetchDependentDropdownData", error.message);
         }
@@ -73,7 +76,7 @@ const ReportAnalysisTwo = () => {
 
     const fetchAPIData = async () => {
         try {
-            const response = await axios.get(`${API_URL}/get-charts-two`);
+            const response = await axios.get(`${API_URL}/get-charts-two?category=${selectedCategory}&location=${selectedLocation}&clause=${selectedClause}&subClause=${selectedSubClause}`);
             // console.log(response.data.result);
             setApiData(response.data.result);
 
@@ -84,10 +87,10 @@ const ReportAnalysisTwo = () => {
 
     useEffect(() => {
         fetchAPIData();
-    }, []);
+    }, [selectedCategory,selectedLocation,selectedClause,selectedSubClause]);
 
-    const isoOrder = ["IMS", "ISO 9001", "ISO 14001", "ISO 45001", "ISO 50001"];
-
+    // const isoOrder = ["IMS", "ISO 9001", "ISO 14001", "ISO 45001", "ISO 50001"];
+    const isoOrder = selectedCategory === 'all' ? ["IMS", "ISO 9001", "ISO 14001", "ISO 45001", "ISO 50001"] :isoOrderList;
     const chartLabels = isoOrder;
 
     const groupedData = {
@@ -167,12 +170,12 @@ const ReportAnalysisTwo = () => {
     return (
         <div>
             <h1 className="font-semibold text-2xl mb-5 border-b border-blue-400">Report Analysis Two-Clause </h1>
-            {JSON.stringify(groupedData)}
+            {/* {JSON.stringify(groupedData)}
 
             <div className="mt-10">
                 {JSON.stringify(apiData)}
 
-            </div>
+            </div> */}
 
             {/* <div>
                 <p>selectedCategory---- {JSON.stringify(selectedCategory)}</p>

@@ -21,6 +21,8 @@ const ReportAnalysisThree = () => {
 
     const [apiData, setApiData] = useState([]);
 
+    const [isoOrderList, setIsoOrderList] = useState([]);
+
     const fetchCategory = async () => {
         const response = await axios.get(`${API_URL}/get-category-master`);
         setCategoryList(response.data.category || []);
@@ -41,6 +43,7 @@ const ReportAnalysisThree = () => {
             const response = await axios.get(`${API_URL}/get-categoryWise-location-isoTypeMaster-isos?category=${selectedCategory}`);
             console.log(response.data)
             setLocationList(response.data.locationList);
+            setIsoOrderList(response.data.isoListNames);
         } catch (error) {
             console.log("Error in fetchDependentDropdownData", error.message);
         }
@@ -69,7 +72,7 @@ const ReportAnalysisThree = () => {
         } else {
             setSubClauseList([])
         }
-    }, []);
+    }, [selectedClause]);
 
     const fetchAPIData = async () => {
         try {
@@ -86,7 +89,8 @@ const ReportAnalysisThree = () => {
         fetchAPIData();
     }, [selectedCategory,selectedLocation,selectedClause,selectedSubClause]);
 
-    const isoOrder = ["IMS", "ISO 9001", "ISO 14001", "ISO 45001", "ISO 50001"];
+    // const isoOrder = ["IMS", "ISO 9001", "ISO 14001", "ISO 45001", "ISO 50001"];
+    const isoOrder = selectedCategory === 'all' ? ["IMS", "ISO 9001", "ISO 14001", "ISO 45001", "ISO 50001"] :isoOrderList;
 
     const chartLabels = isoOrder;
 
@@ -104,11 +108,7 @@ const ReportAnalysisThree = () => {
             groupedData["Yes"].push(((Yes / total) * 100).toFixed(2));
             groupedData["No"].push(((No / total) * 100).toFixed(2));
             groupedData["Partial"].push(((Partial / total) * 100).toFixed(2));
-        } else {
-            groupedData["Yes"].push(0);
-            groupedData["No"].push(0);
-            groupedData["Partial"].push(0);
-        }
+        } 
     })
 
     const series = [
@@ -176,7 +176,7 @@ const ReportAnalysisThree = () => {
     return (
         <div>
             <h1 className="font-semibold text-2xl mb-5 border-b border-blue-400">Report Analysis Three-Clause </h1>
-            
+            {/* {JSON.stringify(isoOrderList)} */}
             {/* <div>
                 <p>selectedCategory---- {JSON.stringify(selectedCategory)}</p>
                 <p>selectedLocation---- {JSON.stringify(selectedLocation)}</p>
