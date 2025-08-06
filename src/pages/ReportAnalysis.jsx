@@ -151,7 +151,7 @@ const ReportAnalysis = () => {
                     }
                     const percentage = ((value / total) * 100).toFixed(1);
                     const label = context.chart.data.labels[context.dataIndex];
-                    return `${label} ${value} (${percentage}%)`;
+                    return `${label} (${percentage}%)`;
                 }
             }
         }

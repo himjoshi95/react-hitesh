@@ -32,6 +32,8 @@ import PartTwo from './pages/ReactHookForms/PartTwo';
 import StackedBarChart from './pages/Charts/StackedBarChart';
 import Gallery from './pages/Gallery';
 import ReportAnalysis from './pages/ReportAnalysis';
+import ReportAnalysisTwo from './pages/ReportAnalysisTwo';
+import ReportAnalysisThree from './pages/ReportAnalysisThree';
 
 
 
@@ -74,6 +76,8 @@ function App() {
           <Route path='/stacked-bar-chart' element={<StackedBarChart/>}/>
           <Route path='/gallery' element={<Gallery/>}/>
           <Route path='/report-analysis' element={<ReportAnalysis/>}/>
+          <Route path='/report-analysis-two' element={<ReportAnalysisTwo/>}/>
+          <Route path='/report-analysis-three' element={<ReportAnalysisThree/>}/>
         </Routes>
         </HelmetProvider>
       </div>
