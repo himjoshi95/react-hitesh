@@ -34,6 +34,7 @@ import Gallery from './pages/Gallery';
 import ReportAnalysis from './pages/ReportAnalysis';
 import ReportAnalysisTwo from './pages/ReportAnalysisTwo';
 import ReportAnalysisThree from './pages/ReportAnalysisThree';
+import ReportAnalysisFour from './pages/ReportAnalysisFour';
 
 
 
@@ -78,6 +79,7 @@ function App() {
           <Route path='/report-analysis' element={<ReportAnalysis/>}/>
           <Route path='/report-analysis-two' element={<ReportAnalysisTwo/>}/>
           <Route path='/report-analysis-three' element={<ReportAnalysisThree/>}/>
+          <Route path='/report-analysis-four' element={<ReportAnalysisFour/>}/>
         </Routes>
         </HelmetProvider>
       </div>

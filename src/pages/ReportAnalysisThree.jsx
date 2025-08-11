@@ -100,16 +100,32 @@ const ReportAnalysisThree = () => {
         Partial: [],
     };
 
+    // isoOrder.forEach((iso) => {
+    //     const entry = apiData.find((item) => item.iso === iso);
+    //     if (entry) {
+    //         const { Yes = 0, No = 0, Partial = 0 } = entry.responses;
+    //         const total = Yes + No + Partial || 1; // prevent divide by zero
+    //         groupedData["Yes"].push(((Yes / total) * 100).toFixed(2));
+    //         groupedData["No"].push(((No / total) * 100).toFixed(2));
+    //         groupedData["Partial"].push(((Partial / total) * 100).toFixed(2));
+    //     } 
+    // })
     isoOrder.forEach((iso) => {
-        const entry = apiData.find((item) => item.iso === iso);
-        if (entry) {
-            const { Yes = 0, No = 0, Partial = 0 } = entry.responses;
-            const total = Yes + No + Partial || 1; // prevent divide by zero
-            groupedData["Yes"].push(((Yes / total) * 100).toFixed(2));
-            groupedData["No"].push(((No / total) * 100).toFixed(2));
-            groupedData["Partial"].push(((Partial / total) * 100).toFixed(2));
-        } 
-    })
+    const entry = apiData.find((item) => item.iso === iso);
+    let Yes = 0, No = 0, Partial = 0;
+
+    if (entry) {
+        Yes = entry.responses.Yes || 0;
+        No = entry.responses.No || 0;
+        Partial = entry.responses.Partial || 0;
+    }
+
+    const total = Yes + No + Partial || 1; // prevent divide by zero
+
+    groupedData["Yes"].push(((Yes / total) * 100).toFixed(2));
+    groupedData["No"].push(((No / total) * 100).toFixed(2));
+    groupedData["Partial"].push(((Partial / total) * 100).toFixed(2));
+});
 
     const series = [
         {
