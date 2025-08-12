@@ -26,6 +26,11 @@ const DepartmentPieChart = () => {
     const [selectedAttribute, setSelectedAttribute] = useState('683fed941be29131454635b0');
     const [attributeList, setAttributeList] = useState([]);
 
+    const [selectedDepartment, setSelectedDepartment] = useState('all');
+    const [selectedProcess, setSelectedProcess] = useState('all');
+
+    //data
+    const [pieData, setPieData] = useState({});
 
     const fetchCategory = async () => {
         const response = await axios.get(`${API_URL}/get-category-master`);
@@ -61,17 +66,74 @@ const DepartmentPieChart = () => {
         }
     },[selectedCategory]);
 
+    const fetchAPIData = async () =>{
+        try {
+            const response = await axios.get(`${API_URL}/get-piechart-department?category=${selectedCategory}&location=${selectedLocation}&attribute=${selectedAttribute}&department=${selectedDepartment}&process=${selectedProcess}`);
+            // console.log(response.data);
+            setPieData(response.data?.pieData || [])
+        } catch (error) {
+            console.log("Error in fetchAPIData",error.message)
+        }
+    }
+
+    useEffect(()=>{
+        if(selectedCategory !== 'all' && selectedLocation !== 'all'){
+            fetchAPIData();
+        }
+    },[selectedCategory,selectedLocation,selectedAttribute,selectedDepartment,selectedProcess]);
+
+    const labels = ['Yes','No','Partial','Not Applicable'];
+    const values = [pieData?.Yes || 0, pieData?.No || 0, pieData?.Partial || 0, pieData?.[`Not Applicable`] || 0];
+    const total = values.reduce((a, b) => a + b, 0);
+
+    const data = {
+        labels,
+        datasets: [
+            {
+                data: values,
+                backgroundColor: ['#4CAF50', '#F44336', '#FFC107','#7393B3'],
+                borderWidth: 1
+            }
+        ]
+    }
+
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            },
+            datalabels: {
+                color: '#fff',
+                font: {
+                    weight: 'bold',
+                    size: 14
+                },
+                formatter: (value, context) => {
+                    if (value === 0) {
+                        return ''; // ✅ Don't display anything for zero values
+                    }
+                    const percentage = ((value / total) * 100).toFixed(1);
+                    const label = context.chart.data.labels[context.dataIndex];
+                    return `${percentage}%`;
+                }
+            }
+        }
+    };
+
+
 
     return (
         <div>
             {/* <h1 className="font-semibold text-2xl mb-5 border-b border-blue-400">Department Pie Chart</h1> */}
             {/* {JSON.stringify(selectedCategory)} */}
-            <div>
+            {/* <div>
                 SelectedCategory: {JSON.stringify(selectedCategory)}
             </div>
             <div>
                 SelectedLocation: {JSON.stringify(selectedLocation)}
-            </div>
+            </div> */}
+            <div>{JSON.stringify(pieData)}</div>
             <div className="grid grid-cols-3 gap-5">
                 <div className='mb-4 flex gap-[40px] items-center'>
                     <label className='font-semibold text-xl'>Category</label>
@@ -140,6 +202,11 @@ const DepartmentPieChart = () => {
                         <option value="all">All</option>
                         
                     </select>
+                </div>
+            </div>
+            <div className="bg-slate-300">
+                <div style={{ width: '300px', height: '300px' }}>
+                    <Pie data={data} options={options} />
                 </div>
             </div>
         </div>
