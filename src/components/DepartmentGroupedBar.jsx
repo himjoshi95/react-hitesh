@@ -1,21 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Bar, Pie } from 'react-chartjs-2';
-import {
-    Chart as ChartJS,
-    ArcElement,
-    BarElement,
-    CategoryScale,
-    LinearScale,
-    Tooltip,
-    Legend
-} from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import Chart from "react-apexcharts";
 
-ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ChartDataLabels);
 
 const API_URL = "http://localhost:3008";
-const DepartmentPieChart = () => {
+
+const DepartmentGroupedBar = () => {
 
     const [categoryList, setCategoryList] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('all');
@@ -23,39 +13,28 @@ const DepartmentPieChart = () => {
     const [locationList, setLocationList] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState('all');
 
-    const [selectedAttribute, setSelectedAttribute] = useState('683fed941be29131454635b0');
-    const [attributeList, setAttributeList] = useState([]);
-
     const [selectedDepartment, setSelectedDepartment] = useState('all');
     const [departmentList, setDepartmentList] = useState([]);
 
     const [selectedProcess, setSelectedProcess] = useState('all');
     const [processList, setProcessList] = useState([]);
 
-    //data
-    const [pieData, setPieData] = useState({});
+    const [apiData, setApiData] = useState([]);
 
     const fetchCategory = async () => {
         const response = await axios.get(`${API_URL}/get-category-master`);
         setCategoryList(response.data.category || [])
     }
 
-    const fetchAttribute= async() => {
-        const response = await axios.get(`${API_URL}/get-attribute-list`);
-        setAttributeList(response.data.attributeData || []);
-    }
-
-
-    useEffect(()=>{
+    useEffect(() => {
         fetchCategory();
-        fetchAttribute();
-    },[]);
+    }, []);
 
     const fetchDependentDropdownData = async () => {
         try {
             const response = await axios.get(`${API_URL}/get-categoryWise-location-isoTypeMaster-isos?category=${selectedCategory}`)
             setLocationList(response.data.locationList);
-            
+
         } catch (error) {
             console.log("Error in fetchDependentDropdownData", error.message);
         }
@@ -76,7 +55,7 @@ const DepartmentPieChart = () => {
         } catch (error) {
             console.log("Error in fetchDepartmentLocation api data",error.message);
         }
-    }    
+    }
 
     useEffect(()=>{
         if(selectedLocation !== 'all'){
@@ -112,78 +91,132 @@ const DepartmentPieChart = () => {
         }
     },[selectedDepartment]);
 
-    const fetchAPIData = async () =>{
+    const fetchAPIData = async() => {
         try {
-            const response = await axios.get(`${API_URL}/get-piechart-department?category=${selectedCategory}&location=${selectedLocation}&attribute=${selectedAttribute}&department=${selectedDepartment}&process=${selectedProcess}`);
-            // console.log(response.data);
-            setPieData(response.data?.pieData || [])
+            const response = await axios.get(`${API_URL}/get-groupedChart-department?category=${selectedCategory}&location=${selectedLocation}&department=${selectedDepartment}&process=${selectedProcess}`);
+            console.log(response.data); 
+            setApiData(response.data.result);           
         } catch (error) {
-            console.log("Error in fetchAPIData",error.message)
+            console.log("Error in fetchAPIData",error.message);
         }
     }
 
     useEffect(()=>{
-        // if(selectedCategory !== 'all' && selectedLocation !== 'all'){
-        //     fetchAPIData();
-        // }
-        fetchAPIData();
-    },[selectedCategory,selectedLocation,selectedAttribute,selectedDepartment,selectedProcess]);
+        if(selectedCategory !== "all" && selectedLocation !== "all" && selectedDepartment !== "all"){
+            fetchAPIData();
+        }
+    },[selectedCategory,selectedLocation,selectedDepartment,selectedProcess])
 
-    const labels = ['Yes','No','Partial','Not Applicable'];
-    const values = [pieData?.Yes || 0, pieData?.No || 0, pieData?.Partial || 0, pieData?.[`Not Applicable`] || 0];
-    const total = values.reduce((a, b) => a + b, 0);
+    const attributeOrder = ["Policies and Objectives","Legal Register","KPIs (Key Performance Indicators)","Communication Matrix","Standard Operating Procedures (SOPs) / Work Instructions","Risk Register","Departmental Manual","Department Organization Chart","Guidelines / Reference Documents","Process Flow Chart","Assets List","Forms/Templates","Checklists","Master List of Documents & Records","Records/Reports","List of External Documents"]
 
-    const data = {
-        labels,
-        datasets: [
-            {
-                data: values,
-                backgroundColor: ['#4CAF50', '#F44336', '#FFC107','#7393B3'],
-                borderWidth: 1
-            }
-        ]
+    const chartLabels = attributeOrder;
+
+    const groupedData = {
+        Yes: [],
+        No: [],
+        Partial: [],
+        'Not Applicable': []
     }
 
-    const options = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom'
-            },
-            datalabels: {
-                color: '#fff',
-                font: {
-                    weight: 'bold',
-                    size: 14
-                },
-                formatter: (value, context) => {
-                    if (value === 0) {
-                        return ''; // ✅ Don't display anything for zero values
-                    }
-                    const percentage = ((value / total) * 100).toFixed(1);
-                    const label = context.chart.data.labels[context.dataIndex];
-                    return `${percentage}%`;
-                }
-            }
+    attributeOrder.forEach((attribute) => {
+        const entry = apiData.find((item) => item.attribute === attribute);
+        let Yes= 0, No = 0, Partial = 0, NotApplicable = 0;
+
+        if(entry){
+            Yes = entry.responses.Yes || 0;
+            No = entry.responses.No || 0;
+            Partial = entry.responses.Partial || 0;
+            NotApplicable = entry.responses[`Not Applicable`] || 0;
         }
+
+        const total = Yes + No + Partial + NotApplicable || 1;
+
+        groupedData["Yes"].push(((Yes / total) * 100).toFixed(2));
+        groupedData["No"].push(((No / total) * 100).toFixed(2));
+        groupedData["Partial"].push(((Partial / total) * 100).toFixed(2));
+        groupedData["Not Applicable"].push(((NotApplicable / total) * 100).toFixed(2));
+    });
+
+    const series = [
+        {
+            name: "Yes",
+            data: groupedData["Yes"].map(Number),
+        },
+        {
+            name: "No",
+            data: groupedData["No"].map(Number),
+        },
+        {
+            name: "Partial",
+            data: groupedData["Partial"].map(Number),
+        },
+        {
+            name: "Not Applicable",
+            data: groupedData["Not Applicable"].map(Number),
+        },
+    ];
+
+    const options = {
+        chart: {
+            type: "bar",
+            stacked: false,
+            toolbar: {
+                show: true,
+            },
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: "70%",
+                endingShape: "rounded",
+            },
+        },
+        // colors: ["#4CAF50", "#F44336", "#FFEB3B"], // Green, Red, Yellow
+        dataLabels: {
+            enabled: true,
+            formatter: (val) => `${val.toFixed(1)}%`,
+        },
+        xaxis: {
+            categories: chartLabels,
+        },
+        yaxis: {
+            min: 0,
+            max: 100,
+            labels: {
+                formatter: (val) => `${val.toFixed(0)}%`,
+            },
+        },
+        legend: {
+            position: "top",
+        },
+        tooltip: {
+            y: {
+                formatter: (val) => `${val.toFixed(1)}%`,
+            },
+        },
+        fill: {
+            opacity: 1,
+        },
     };
 
+    
+
+
     return (
-        <div>
-            {/* <h1 className="font-semibold text-2xl mb-5 border-b border-blue-400">Department Pie Chart</h1> */}
-            {/* {JSON.stringify(selectedCategory)} */}
-            <div>
-                SelectedCategory: {JSON.stringify(selectedCategory)}
-            </div>
-            <div>
-                SelectedLocation: {JSON.stringify(selectedLocation)}
-            </div>
-            <div>Department - {selectedDepartment}</div>
-            <div>Process - {selectedProcess}</div>
-            <div>{JSON.stringify(pieData)}</div>
-            {/* <div>{JSON.stringify(processList)}</div> */}
-            <div className="grid grid-cols-3 gap-5">
-                <div className='mb-4 flex gap-[40px] items-center'>
+        <div className="pb-10">
+            <h1>Department Grouped Bar</h1>
+            <div>category- {selectedCategory}</div>
+            <div>location- {selectedLocation}</div>
+            <div>department- {selectedDepartment}</div>
+            <div>process - {selectedProcess}</div>
+
+            {/* <div className="mt-10">
+                {JSON.stringify(apiData)}
+            </div> */}
+
+
+            <div className="grid grid-cols-2 gap-5">
+                <div className='mb-4 flex gap-3 items-center'>
                     <label className='font-semibold text-xl'>Category</label>
                     <select
                         className='border w-full border-black rounded py-1 items-center'
@@ -201,8 +234,7 @@ const DepartmentPieChart = () => {
                         }
                     </select>
                 </div>
-
-                <div className='mb-4 flex gap-3'>
+                <div className='mb-4 flex gap-3 items-center'>
                     <label className='font-semibold text-xl'>Location</label>
                     <select
                         className='border w-full border-black rounded py-1 items-center'
@@ -215,18 +247,6 @@ const DepartmentPieChart = () => {
                             &&
                             locationList.map(loc => <option key={loc._id} value={loc._id}>{loc.name}</option>)
                         }
-                    </select>
-                </div>
-
-                <div className='mb-4 flex gap-3'>
-                    <label className='font-semibold text-xl'>Attribute</label>
-                    <select
-                        className='border w-full border-black rounded py-1 items-center'
-                        value={selectedAttribute}
-                        onChange={(e) => setSelectedAttribute(e.target.value)}
-                    >
-                        {/* <option value="all">All</option> */}
-                        {attributeList.map(attr => <option key={attr._id} value={attr._id}>{attr.name}</option>)}
                     </select>
                 </div>
                 <div className='mb-4 flex gap-3'>
@@ -260,13 +280,12 @@ const DepartmentPieChart = () => {
                     </select>
                 </div>
             </div>
-            <div className="bg-slate-300">
-                <div style={{ width: '300px', height: '300px' }}>
-                    <Pie data={data} options={options} />
-                </div>
+
+            <div>
+                <Chart options={options} series={series} type="bar" height={500} />
             </div>
         </div>
     )
 };
 
-export default DepartmentPieChart;
+export default DepartmentGroupedBar;

@@ -1,3 +1,4 @@
+import DepartmentGroupedBar from "../components/DepartmentGroupedBar";
 import DepartmentPieChart from "../components/DepartmentPieChart";
 
 
@@ -9,6 +10,9 @@ const ReportAnalysisFour = () => {
 
             <div>
                 <DepartmentPieChart/>
+            </div>
+            <div className="mt-5">
+                <DepartmentGroupedBar/>
             </div>
         </div>
     )
