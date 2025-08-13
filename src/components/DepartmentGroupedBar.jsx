@@ -94,17 +94,18 @@ const DepartmentGroupedBar = () => {
     const fetchAPIData = async() => {
         try {
             const response = await axios.get(`${API_URL}/get-groupedChart-department?category=${selectedCategory}&location=${selectedLocation}&department=${selectedDepartment}&process=${selectedProcess}`);
-            console.log(response.data); 
-            setApiData(response.data.result);           
+            console.log(response.data.result); 
+            setApiData(response?.data?.result);           
         } catch (error) {
             console.log("Error in fetchAPIData",error.message);
         }
     }
 
     useEffect(()=>{
-        if(selectedCategory !== "all" && selectedLocation !== "all" && selectedDepartment !== "all"){
-            fetchAPIData();
-        }
+        // if(selectedCategory !== "all" && selectedLocation !== "all" && selectedDepartment !== "all" ){
+        //     fetchAPIData();
+        // }
+        fetchAPIData();
     },[selectedCategory,selectedLocation,selectedDepartment,selectedProcess])
 
     const attributeOrder = ["Policies and Objectives","Legal Register","KPIs (Key Performance Indicators)","Communication Matrix","Standard Operating Procedures (SOPs) / Work Instructions","Risk Register","Departmental Manual","Department Organization Chart","Guidelines / Reference Documents","Process Flow Chart","Assets List","Forms/Templates","Checklists","Master List of Documents & Records","Records/Reports","List of External Documents"]
@@ -119,7 +120,7 @@ const DepartmentGroupedBar = () => {
     }
 
     attributeOrder.forEach((attribute) => {
-        const entry = apiData.find((item) => item.attribute === attribute);
+        const entry = apiData?.find((item) => item.attribute === attribute);
         let Yes= 0, No = 0, Partial = 0, NotApplicable = 0;
 
         if(entry){
@@ -167,17 +168,31 @@ const DepartmentGroupedBar = () => {
         plotOptions: {
             bar: {
                 horizontal: false,
-                columnWidth: "70%",
+                columnWidth: "80%",
                 endingShape: "rounded",
+                dataLabels: {
+                    position: "top", // place above bars
+                    orientation: "vertical"
+                },
             },
         },
         // colors: ["#4CAF50", "#F44336", "#FFEB3B"], // Green, Red, Yellow
         dataLabels: {
             enabled: true,
-            formatter: (val) => `${val.toFixed(1)}%`,
+            formatter: (val) => `${val.toFixed(1)}%`,            
+            offsetY: -10,
+            style: {
+                fontSize: "12px",
+                colors: ["#36454F"] // <- change to any CSS color or hex
+            }
         },
         xaxis: {
             categories: chartLabels,
+            labels: {
+                rotate: -40,
+                style: { fontSize: '10px' },
+                // trim: true,
+            },
         },
         yaxis: {
             min: 0,

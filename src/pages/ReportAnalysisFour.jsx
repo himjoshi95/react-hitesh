@@ -1,3 +1,4 @@
+import DepartmentCategoryGaugeChart from "../components/DepartmentCategoryGaugeChart";
 import DepartmentGroupedBar from "../components/DepartmentGroupedBar";
 import DepartmentPieChart from "../components/DepartmentPieChart";
 
@@ -13,6 +14,11 @@ const ReportAnalysisFour = () => {
             </div>
             <div className="mt-5">
                 <DepartmentGroupedBar/>
+            </div>
+            <div className="mt-5">
+                <h1>Gauge chart One Category Wise</h1>
+                <DepartmentCategoryGaugeChart/>
+
             </div>
         </div>
     )
