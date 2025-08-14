@@ -32,6 +32,8 @@ const DepartmentPieChart = () => {
     const [selectedProcess, setSelectedProcess] = useState('all');
     const [processList, setProcessList] = useState([]);
 
+    const [loading,setLoading] =useState(false);
+
     //data
     const [pieData, setPieData] = useState({});
 
@@ -114,11 +116,14 @@ const DepartmentPieChart = () => {
 
     const fetchAPIData = async () =>{
         try {
+            setLoading(true);
             const response = await axios.get(`${API_URL}/get-piechart-department?category=${selectedCategory}&location=${selectedLocation}&attribute=${selectedAttribute}&department=${selectedDepartment}&process=${selectedProcess}`);
             // console.log(response.data);
             setPieData(response.data?.pieData || [])
+            setLoading(false);
         } catch (error) {
-            console.log("Error in fetchAPIData",error.message)
+            console.log("Error in fetchAPIData",error.message);
+            setLoading(false);
         }
     }
 
@@ -261,9 +266,14 @@ const DepartmentPieChart = () => {
                 </div>
             </div>
             <div className="bg-slate-300">
+                {loading
+                ?
+                <div className="flex justify-center items-center" style={{ width: '300px', height: '300px' }}>Loading.......</div>
+                :            
                 <div style={{ width: '300px', height: '300px' }}>
                     <Pie data={data} options={options} />
                 </div>
+                }
             </div>
         </div>
     )

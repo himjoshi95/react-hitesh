@@ -21,6 +21,8 @@ const DepartmentGroupedBar = () => {
 
     const [apiData, setApiData] = useState([]);
 
+    const [loading, setLoading] = useState(false);
+
     const fetchCategory = async () => {
         const response = await axios.get(`${API_URL}/get-category-master`);
         setCategoryList(response.data.category || [])
@@ -93,11 +95,14 @@ const DepartmentGroupedBar = () => {
 
     const fetchAPIData = async() => {
         try {
+            setLoading(true);
             const response = await axios.get(`${API_URL}/get-groupedChart-department?category=${selectedCategory}&location=${selectedLocation}&department=${selectedDepartment}&process=${selectedProcess}`);
             console.log(response.data.result); 
-            setApiData(response?.data?.result);           
+            setApiData(response?.data?.result);
+            setLoading(false);           
         } catch (error) {
             console.log("Error in fetchAPIData",error.message);
+            setLoading(false);
         }
     }
 
@@ -296,9 +301,17 @@ const DepartmentGroupedBar = () => {
                 </div>
             </div>
 
-            <div>
-                <Chart options={options} series={series} type="bar" height={500} />
-            </div>
+            {
+                loading
+                ?
+                <div style={{height:"500px"}}>Loading.....</div>
+                :
+                <div>
+                    <Chart options={options} series={series} type="bar" height={500} />
+                </div>
+
+            }
+
         </div>
     )
 };
