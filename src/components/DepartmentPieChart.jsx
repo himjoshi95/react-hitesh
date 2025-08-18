@@ -32,7 +32,7 @@ const DepartmentPieChart = () => {
     const [selectedProcess, setSelectedProcess] = useState('all');
     const [processList, setProcessList] = useState([]);
 
-    const [loading,setLoading] =useState(false);
+    const [loading, setLoading] = useState(false);
 
     //data
     const [pieData, setPieData] = useState({});
@@ -42,99 +42,102 @@ const DepartmentPieChart = () => {
         setCategoryList(response.data.category || [])
     }
 
-    const fetchAttribute= async() => {
+    const fetchAttribute = async () => {
         const response = await axios.get(`${API_URL}/get-attribute-list`);
         setAttributeList(response.data.attributeData || []);
     }
 
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchCategory();
         fetchAttribute();
-    },[]);
+    }, []);
 
     const fetchDependentDropdownData = async () => {
         try {
             const response = await axios.get(`${API_URL}/get-categoryWise-location-isoTypeMaster-isos?category=${selectedCategory}`)
             setLocationList(response.data.locationList);
-            
+
         } catch (error) {
             console.log("Error in fetchDependentDropdownData", error.message);
         }
     }
 
-    useEffect(()=>{
-        if(selectedCategory !== 'all'){
+    useEffect(() => {
+        if (selectedCategory !== 'all') {
             fetchDependentDropdownData();
-        }else{
+        } else {
             setLocationList([]);
         }
-    },[selectedCategory]);
+    }, [selectedCategory]);
 
-    const fetchDepartmentLocation = async() =>{
+    const fetchDepartmentLocation = async () => {
         try {
             const response = await axios.get(`${API_URL}/get-location-department?locationId=${selectedLocation}`)
             setDepartmentList(response.data.departmentList);
         } catch (error) {
-            console.log("Error in fetchDepartmentLocation api data",error.message);
+            console.log("Error in fetchDepartmentLocation api data", error.message);
         }
-    }    
+    }
 
-    useEffect(()=>{
-        if(selectedLocation !== 'all'){
+    useEffect(() => {
+        if (selectedLocation !== 'all') {
             fetchDepartmentLocation()
             setSelectedDepartment('all')
             setProcessList([]);
             setSelectedProcess('all')
-        }else{
+        } else {
             setDepartmentList([]);
             setSelectedDepartment('all')
             setProcessList([]);
             setSelectedProcess('all')
         }
-    },[selectedLocation]);
+    }, [selectedLocation]);
 
-    const fetchDepartmentProcessLocation = async()=>{
+    const fetchDepartmentProcessLocation = async () => {
         try {
             const response = await axios.get(`${API_URL}/get-location-department-process?locationId=${selectedLocation}&departmentId=${selectedDepartment}`)
             // console.log(response.data);
-            setProcessList(response.data.processList)            
+            setProcessList(response.data.processList)
         } catch (error) {
-            console.log("Error in fetchDepartmentProcessLocation api data",error.message);
+            console.log("Error in fetchDepartmentProcessLocation api data", error.message);
         }
     }
 
-    useEffect(()=>{
-        if(selectedDepartment !== 'all'){
+    useEffect(() => {
+        if (selectedDepartment !== 'all') {
             fetchDepartmentProcessLocation();
             setSelectedProcess("all");
-        }else{
+        } else {
             setSelectedProcess("all");
             setProcessList([]);
         }
-    },[selectedDepartment]);
+    }, [selectedDepartment]);
 
-    const fetchAPIData = async () =>{
+    const fetchAPIData = async () => {
         try {
             setLoading(true);
             const response = await axios.get(`${API_URL}/get-piechart-department?category=${selectedCategory}&location=${selectedLocation}&attribute=${selectedAttribute}&department=${selectedDepartment}&process=${selectedProcess}`);
-            // console.log(response.data);
-            setPieData(response.data?.pieData || [])
+            console.log("-------------------");
+            console.log(response.data.pieData);
+            console.log("-------------------");
+            setPieData(response.data?.pieData || {})
+            // console.log(pieData);
             setLoading(false);
         } catch (error) {
-            console.log("Error in fetchAPIData",error.message);
+            console.log("Error in fetchAPIData", error.message);
             setLoading(false);
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         // if(selectedCategory !== 'all' && selectedLocation !== 'all'){
         //     fetchAPIData();
         // }
         fetchAPIData();
-    },[selectedCategory,selectedLocation,selectedAttribute,selectedDepartment,selectedProcess]);
+    }, [selectedCategory, selectedLocation, selectedAttribute, selectedDepartment, selectedProcess]);
 
-    const labels = ['Yes','No','Partial','Not Applicable'];
+    const labels = ['Yes', 'No', 'Partial', 'Not Applicable'];
     const values = [pieData?.Yes || 0, pieData?.No || 0, pieData?.Partial || 0, pieData?.[`Not Applicable`] || 0];
     const total = values.reduce((a, b) => a + b, 0);
 
@@ -143,7 +146,7 @@ const DepartmentPieChart = () => {
         datasets: [
             {
                 data: values,
-                backgroundColor: ['#4CAF50', '#F44336', '#FFC107','#7393B3'],
+                backgroundColor: ['#4CAF50', '#F44336', '#FFC107', '#7393B3'],
                 borderWidth: 1
             }
         ]
@@ -239,14 +242,14 @@ const DepartmentPieChart = () => {
                     <select
                         className='border w-full border-black rounded py-1 items-center'
                         value={selectedDepartment}
-                        onChange={(e)=> setSelectedDepartment(e.target.value)}                        
+                        onChange={(e) => setSelectedDepartment(e.target.value)}
                     >
                         <option value="all">All</option>
                         {
                             departmentList.length !== 0
                             &&
                             departmentList.map(dept => <option key={dept._id} value={dept._id}>{dept.name}</option>)
-                        }                        
+                        }
                     </select>
                 </div>
                 <div className='mb-4 flex gap-3'>
@@ -254,25 +257,194 @@ const DepartmentPieChart = () => {
                     <select
                         className='border w-full border-black rounded py-1 items-center'
                         value={selectedProcess}
-                        onChange={(e) => setSelectedProcess(e.target.value)}                  
+                        onChange={(e) => setSelectedProcess(e.target.value)}
                     >
                         <option value="all">All</option>
                         {
                             processList.length !== 0
                             &&
                             processList.map(process => <option key={process._id} value={process._id}>{process.name}</option>)
-                        }                        
+                        }
                     </select>
                 </div>
             </div>
             <div className="bg-slate-300">
                 {loading
-                ?
-                <div className="flex justify-center items-center" style={{ width: '300px', height: '300px' }}>Loading.......</div>
-                :            
-                <div style={{ width: '300px', height: '300px' }}>
-                    <Pie data={data} options={options} />
-                </div>
+                    ?
+                    <div className="flex justify-center items-center" style={{ width: '300px', height: '300px' }}>Loading.......</div>
+                    :
+                    Object.keys(pieData).length === 0
+                        ?
+                        <div style={{ width: '300px', height: '300px' }}>
+                            No Data Available
+                        </div>
+                        :
+                        <div className="bg-slate-300 flex mt-2 py-5">
+                            <div style={{ width: '300px', height: '300px' }}>
+                                <Pie data={data} options={options} />
+                            </div>
+                            <div>
+                                <table className="w-full border-collapse">
+                                    <tbody>
+                                        <tr>
+                                            <td className="text-left px-4 py-0.5 text-gray-700 font-medium">Category</td>
+                                            <td className="text-left px-4 py-0.5 text-gray-700 font-medium">
+                                                <select
+                                                    className="bg-slate-300 text-black appearance-none"
+                                                    // className='border w-full border-black rounded py-1 items-center'
+                                                    value={selectedCategory || "all"}
+                                                    onChange={(e) => {
+                                                        setSelectedCategory(e.target.value)
+                                                        setSelectedLocation('all');
+                                                    }}
+                                                    disabled
+                                                >
+                                                    <option value="all">All</option>
+                                                    {
+                                                        categoryList.map(item => (
+                                                            <option key={item._id} value={item._id}>{item.name}</option>
+                                                        ))
+                                                    }
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="text-left px-4 py-0.5 text-gray-700 font-medium">Location</td>
+                                            <td className="text-left px-4 py-0.5 text-gray-700 font-medium">
+                                                <select
+                                                    // className='border w-full border-black rounded py-1 items-center'
+                                                    className="bg-red-300 text-black appearance-none"
+                                                    value={selectedLocation}
+                                                    onChange={(e) => setSelectedLocation(e.target.value)}
+                                                    disabled
+                                                >
+                                                    <option value="all">All</option>
+                                                    {
+                                                        locationList.length !== 0
+                                                        &&
+                                                        locationList.map(loc => <option key={loc._id} value={loc._id}>{loc.name}</option>)
+                                                    }
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="text-left px-4 py-0.5 text-gray-700 font-medium">Attribute</td>
+                                            <td className="text-left px-4 py-0.5 text-gray-700 font-medium">
+                                                <select
+                                                    // className='border w-full border-black rounded py-1 items-center'
+                                                    className="bg-slate-300 w-44 text-black appearance-none"
+                                                    value={selectedAttribute}
+                                                    onChange={(e) => setSelectedAttribute(e.target.value)}
+                                                    disabled
+                                                >
+                                                    {/* <option value="all">All</option> */}
+                                                    {attributeList.map(attr => <option key={attr._id} value={attr._id}>{attr.name}</option>)}
+                                                </select>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="text-left px-4 py-0.5 text-gray-700 font-medium">Department</td>
+                                            <td className="text-left px-4 py-0.5 text-gray-700 font-medium">
+                                                <select
+                                                    // className='border w-full border-black rounded py-1 items-center'
+                                                    className="bg-slate-300 text-black appearance-none"
+                                                    value={selectedDepartment}
+                                                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                                                >
+                                                    <option value="all">All</option>
+                                                    {
+                                                        departmentList.length !== 0
+                                                        &&
+                                                        departmentList.map(dept => <option key={dept._id} value={dept._id}>{dept.name}</option>)
+                                                    }
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="text-left px-4 py-0.5 text-gray-700 font-medium">Process</td>
+                                            <td className="text-left px-4 py-0.5 text-gray-700 font-medium">
+                                                <select
+                                                    // className='border w-full border-black rounded py-1 items-center'
+                                                    className="bg-slate-300 text-black appearance-none"
+                                                    value={selectedProcess}
+                                                    onChange={(e) => setSelectedProcess(e.target.value)}
+                                                >
+                                                    <option value="all">All</option>
+                                                    {
+                                                        processList.length !== 0
+                                                        &&
+                                                        processList.map(process => <option key={process._id} value={process._id}>{process.name}</option>)
+                                                    }
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="text-lg">
+                                <div>
+                                    Pie chart for <select
+                                                    // className='border w-full border-black rounded py-1 items-center'
+                                                    className="bg-slate-300 w-44 text-black appearance-none"
+                                                    value={selectedAttribute}
+                                                    onChange={(e) => setSelectedAttribute(e.target.value)}
+                                                    disabled
+                                                >
+                                                    {attributeList.map(attr => <option key={attr._id} value={attr._id}>{attr.name}</option>)}
+                                                </select>
+                                    Summary in % for <select
+                                                    className="bg-slate-300 text-black appearance-none"
+                                                    // className='border w-full border-black rounded py-1 items-center'
+                                                    value={selectedCategory || "all"}
+                                                    onChange={(e) => {
+                                                        setSelectedCategory(e.target.value)
+                                                        setSelectedLocation('all');
+                                                    }}
+                                                    disabled
+                                                >
+                                                    <option value="all">All</option>
+                                                    {
+                                                        categoryList.map(item => (
+                                                            <option key={item._id} value={item._id}>{item.name}</option>
+                                                        ))
+                                                    }
+                                                </select> category,
+                                                <select
+                                                    // className='border w-full border-black rounded py-1 items-center'
+                                                    className="bg-slate-300 text-black appearance-none"
+                                                    value={selectedLocation}
+                                                    onChange={(e) => setSelectedLocation(e.target.value)}
+                                                    disabled
+                                                >
+                                                    <option value="all">All</option>
+                                                    {
+                                                        locationList.length !== 0
+                                                        &&
+                                                        locationList.map(loc => <option key={loc._id} value={loc._id}>{loc.name}</option>)
+                                                    }
+                                                </select> location.
+
+                                                <div>
+                                                    Total requirements in numbers : {total} (in numbers)
+                                                </div>
+                                                <div>
+                Total Yes : {pieData?.Yes || 0} (in numbers) - ({((pieData?.Yes || 0) / total * 100).toFixed(1)}%)
+            </div>
+            <div>
+                Total No : {pieData?.No || 0} (in numbers) - ({((pieData?.No || 0) / total * 100).toFixed(1)}%)
+            </div>
+            <div>
+                Total Partial : {pieData?.Partial || 0} (in numbers) - ({((pieData?.Partial || 0) / total * 100).toFixed(1)}%)
+            </div>
+            <div>
+                Total Not Applicable : {pieData?.[`Not Applicable`] || 0} (in numbers) - ({((pieData?.[`Not Applicable`] || 0) / total * 100).toFixed(1)}%)
+            </div>
+
+
+                                </div>
+                            </div>
+                        </div>
                 }
             </div>
         </div>

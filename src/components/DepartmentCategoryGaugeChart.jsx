@@ -124,6 +124,8 @@ const DepartmentCategoryGaugeChart = () => {
                         ))}
                     </div>
                     :
+                    chartData.length > 0
+                    ?                  
                     <div className={`grid grid-cols-4 gap-2 transition-opacity duration-500 ${loading ? "opacity-0" : "opacity-100"}`}>
                         {chartData.map((chart, idx) => (
                             <div key={idx} className="bg-blue-100 rounded">
@@ -144,6 +146,8 @@ const DepartmentCategoryGaugeChart = () => {
                             </div>
                         ))}
                     </div>
+                    :
+                    <div>No Data Available</div>
 
 
             }

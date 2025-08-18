@@ -97,7 +97,7 @@ const DepartmentGroupedBar = () => {
         try {
             setLoading(true);
             const response = await axios.get(`${API_URL}/get-groupedChart-department?category=${selectedCategory}&location=${selectedLocation}&department=${selectedDepartment}&process=${selectedProcess}`);
-            console.log(response.data.result); 
+            // console.log(response.data.result); 
             setApiData(response?.data?.result);
             setLoading(false);           
         } catch (error) {
@@ -306,8 +306,14 @@ const DepartmentGroupedBar = () => {
                 ?
                 <div style={{height:"500px"}}>Loading.....</div>
                 :
+                apiData.length > 0
+                ?                
                 <div>
                     <Chart options={options} series={series} type="bar" height={500} />
+                </div>
+                :
+                <div className="h-[500px]">
+                    No Data Available
                 </div>
 
             }
